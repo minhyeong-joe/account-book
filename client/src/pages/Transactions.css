@@ -1,0 +1,150 @@
+.transactions-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.select-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.select-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.current-month {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+
+    button {
+        padding: 5px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        font-size: 16px;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+}
+
+.total-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    gap: 10px;
+}
+
+.total-card-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+
+    &.positive {
+        color: rgb(24, 145, 24);
+    }
+    &.negative {
+        color: rgb(235, 103, 85);
+    }
+}
+
+.income {
+    color: rgb(55, 114, 241);
+}
+
+.expense {
+    color: rgb(235, 103, 85);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.daily-total>span {
+    margin: 0 10px;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    cursor: pointer;
+    &:hover {
+        background-color: #ebebeb;
+    }
+}
+
+.desc-and-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.transaction-description {
+    font-size: 16px;
+    color: #333;
+}
+
+.transaction-time {
+    font-size: 14px;
+    color: #888;
+}
+
+.transaction-category {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+}
+
+.transaction-amount {
+    font-size: 16px;
+}
