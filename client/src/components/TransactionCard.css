@@ -1,0 +1,54 @@
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.daily-total>span {
+    margin: 0 10px;
+}
+
+.transaction-item {
+    display: grid;
+    grid-template-columns: 2fr 4fr 1fr;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    &.delete-mode {
+        grid-template-columns: 1fr 2fr 4fr 1fr;
+    }
+    &:hover {
+        background-color: #ebebeb;
+    }
+}
+
+.desc-and-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.transaction-description {
+    font-size: 16px;
+    color: #333;
+}
+
+.transaction-time {
+    font-size: 14px;
+    color: #888;
+}
+
+.transaction-category {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+}
+
+.transaction-amount {
+    font-size: 16px;
+    text-align: right;
+}

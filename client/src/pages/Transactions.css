@@ -1,0 +1,66 @@
+.transactions-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.select-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.select-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.current-month {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+
+    button {
+        padding: 5px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        font-size: 16px;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+
+    .delete-confirm-btn, .delete-transactions-btn {
+        background-color: rgb(235, 103, 85);
+        &:hover {
+            background-color: rgb(241, 50, 24);
+        }
+    }
+}
