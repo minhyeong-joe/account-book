@@ -1,5 +1,6 @@
 const mockTransactions = [
 	{
+		id: "1",
 		date: "2025-03-15",
 		category: "Groceries",
 		description: "Bought vegetables and fruits",
@@ -7,6 +8,7 @@ const mockTransactions = [
 		amount: -50.25,
 	},
 	{
+		id: "2",
 		date: "2025-03-15",
 		category: "Salary",
 		description: "Monthly salary",
@@ -14,6 +16,7 @@ const mockTransactions = [
 		amount: 3000.0,
 	},
 	{
+		id: "3",
 		date: "2025-03-20",
 		category: "Dining",
 		description: "Dinner at a restaurant",
@@ -21,6 +24,7 @@ const mockTransactions = [
 		amount: -75.0,
 	},
 	{
+		id: "4",
 		date: "2025-04-10",
 		category: "Transport",
 		description: "Monthly metro pass",
@@ -28,6 +32,7 @@ const mockTransactions = [
 		amount: -100.0,
 	},
 	{
+		id: "5",
 		date: "2025-04-14",
 		category: "Entertainment",
 		description: "Movie tickets",
@@ -35,6 +40,7 @@ const mockTransactions = [
 		amount: -30.0,
 	},
 	{
+		id: "6",
 		date: "2025-04-14",
 		category: "Freelance",
 		description: "Freelance project payment",
@@ -42,6 +48,7 @@ const mockTransactions = [
 		amount: 500.0,
 	},
 	{
+		id: "7",
 		date: "2025-04-20",
 		category: "Shopping",
 		description: "Bought new clothes",
@@ -49,6 +56,7 @@ const mockTransactions = [
 		amount: -200.0,
 	},
 	{
+		id: "8",
 		date: "2025-04-22",
 		category: "Gift",
 		description: "Received birthday gift",

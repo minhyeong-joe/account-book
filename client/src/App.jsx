@@ -5,7 +5,7 @@ import TransactionDetail from './pages/TransactionDetail';
 import Reports from './pages/Reports';
 import PaymentMethods from './pages/PaymentMethods';
 import NotFound from './pages/NotFound';
-import Navbar from './components/Navbar';
+import { Navbar } from './components';
 
 function App() {
   return (

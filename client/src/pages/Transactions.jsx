@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, ChevronLeft, ChevronRight, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import Card from '../components/Card';
-import TransactionCard  from '../components/TransactionCard';
+import { SummaryCard, TransactionList } from '../components';
 import mockTransactions from '../lib/mockTransactions'; // Mock data for transactions
 import { MONTH_NAMES } from '../lib/constants';
 
@@ -15,7 +14,32 @@ const Transactions = () => {
     const [year, setYear] = useState(now.getFullYear());
     const [month, setMonth] = useState(now.getMonth());
     const [deleteMode, setDeleteMode] = useState(false);
+    const [transactions, setTransactions] = useState([]);
+    const [selectedTransactions, setSelectedTransactions] = useState([]);
 
+    // simulate fetching transactions from an API (use mock-up data for now)
+    useEffect(() => {
+        // Fetch transactions from an API or use mock data
+        // filter & sort would be handled by the backend in a real-world scenario
+        const filteredTransactions = mockTransactions.filter(transaction => {
+            const [transactionYear, transactionMonth] = transaction.date.split('-').map(Number);
+            return transactionYear === year && transactionMonth === month+1;
+        }).sort((a, b) => {
+            const dateA = new Date(`${a.date}T${a.time}`);
+            const dateB = new Date(`${b.date}T${b.time}`);
+            return dateB - dateA;
+        });
+        setTransactions(filteredTransactions);
+        setDeleteMode(false);
+        setSelectedTransactions([]);
+    }, [year, month]);
+
+    useEffect(() => {
+        console.log('Selected Transactions:', selectedTransactions);
+    }, [selectedTransactions]);
+        
+
+    // handlers
     const handlePrevMonth = () => {
         if (month === 1) {
             setMonth(12);
@@ -39,46 +63,28 @@ const Transactions = () => {
     }
 
     const onDeleteConfirm = () => {
-        // Logic to delete transactions goes here
+        setTransactions((prevTransactions) =>
+            prevTransactions.filter(
+                (transaction) => !selectedTransactions.includes(transaction.id)
+            )
+        );
         setDeleteMode(false);
+        setSelectedTransactions([]);
     }
 
     const onDeleteCancel = () => {
         setDeleteMode(false);
     }
 
-    const filteredTransactions = mockTransactions.filter(transaction => {
-        const [transactionYear, transactionMonth] = transaction.date.split('-').map(Number);
-        return transactionYear === year && transactionMonth === month+1;
-    })
-
-    const sortedTransactions = filteredTransactions.sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
-        return dateB - dateA;
-    });
-
-    const groupedTransactions = sortedTransactions.reduce((acc, transaction) => {
-        const { date, amount } = transaction;
-        if (!acc[date]) {
-            acc[date] = { transactions: [], income: 0, expense: 0 };
-        }
-        acc[date].transactions.push(transaction);
-        if (amount > 0) {
-            acc[date].income += amount;
-        } else {
-            acc[date].expense += Math.abs(amount);
-        }
-        return acc;
-    }, {});
-
-    const income = filteredTransactions
-        .filter(transaction => transaction.amount > 0)
-        .reduce((sum, transaction) => sum + transaction.amount, 0);
-    const expense = filteredTransactions
-        .filter(transaction => transaction.amount < 0)
-        .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
-    const total = income - expense;
+    const handleCheckboxChange = (transactionId) => {
+        setSelectedTransactions((prevSelected) => {
+            if (prevSelected.includes(transactionId)) {
+                return prevSelected.filter((id) => id !== transactionId);
+            } else {
+                return [...prevSelected, transactionId];
+            }
+        });
+    };
 
     return (
         <div className="transactions-page">
@@ -105,33 +111,8 @@ const Transactions = () => {
                     
                 </div>
             </div>
-            <Card>
-                <div className="total-card">
-                    <div className="total-card-item">
-                        <span className="label">Income</span>
-                        <span className="value income">{income.toFixed(2)}</span>
-                    </div>
-                    <div className="total-card-item">
-                        <span className="label">Expense</span>
-                        <span className="value expense">{expense.toFixed(2)}</span>
-                    </div>
-                    <div className="total-card-item">
-                        <span className="label">Total</span>
-                        <span className={`value ${total >= 0 ? 'positive' : 'negative'}`}>{total.toFixed(2)}</span>
-                    </div>
-                </div>
-            </Card>
-
-            {Object.entries(groupedTransactions).map(([date, { transactions, income, expense }]) => (
-                <TransactionCard
-                    key={date}
-                    date={date}
-                    income={income}
-                    expense={expense}
-                    transactions={transactions}
-                    deleteMode={deleteMode}
-                />
-            ))}
+            <SummaryCard transactions={transactions} />
+            <TransactionList transactions={transactions} deleteMode={deleteMode} onCheckboxChange={handleCheckboxChange} />
         </div>
     );
 };
