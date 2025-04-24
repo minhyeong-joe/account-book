@@ -56,6 +56,13 @@
             background-color: #0056b3;
         }
     }
+
+    .delete-confirm-btn, .delete-transactions-btn {
+        background-color: rgb(235, 103, 85);
+        &:hover {
+            background-color: rgb(241, 50, 24);
+        }
+    }
 }
 
 .total-card {
@@ -113,11 +120,14 @@
 }
 
 .transaction-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 2fr 4fr 1fr;
+    align-items: center;
     margin-bottom: 10px;
     cursor: pointer;
+    &.delete-mode {
+        grid-template-columns: 1fr 2fr 4fr 1fr;
+    }
     &:hover {
         background-color: #ebebeb;
     }
@@ -147,4 +157,5 @@
 
 .transaction-amount {
     font-size: 16px;
+    text-align: right;
 }
