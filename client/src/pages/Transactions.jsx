@@ -40,23 +40,11 @@ const Transactions = () => {
         
 
     // handlers
-    const handlePrevMonth = () => {
-        if (month === 1) {
-            setMonth(12);
-            setYear(year - 1);
-        } else {
-            setMonth(month - 1);
-        }
-    };
-
-    const handleNextMonth = () => {
-        if (month === 12) {
-            setMonth(1);
-            setYear(year + 1);
-        } else {
-            setMonth(month + 1);
-        }
-    };
+    const changeMonth = (offset) => {
+        const newDate = new Date(year, month + offset, 1);
+        setYear(newDate.getFullYear());
+        setMonth(newDate.getMonth());
+    }
 
     const onDeleteClick = () => {
         setDeleteMode(true);
@@ -90,9 +78,9 @@ const Transactions = () => {
         <div className="transactions-page">
             <div className="header">
                 <div className="month-selector">
-                    <button className="prev-month select-btn" onClick={handlePrevMonth}><ChevronLeft size={20} /></button>
+                    <button className="prev-month select-btn" onClick={() => changeMonth(-1)}><ChevronLeft size={20} /></button>
                     <span className="current-month">{MONTH_NAMES[month]}, {year}</span>
-                    <button className="next-month select-btn" onClick={handleNextMonth}><ChevronRight size={20} /></button>
+                    <button className="next-month select-btn" onClick={() => changeMonth(1)}><ChevronRight size={20} /></button>
                 </div>
                 <div className="btn-group">
                     {deleteMode ? (

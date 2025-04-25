@@ -1,21 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import TransactionCard from './TransactionCard';    
+import TransactionCard from './TransactionCard';
+import { groupTransactionsByDate } from '../lib/utils';
+
 
 const TransactionList = ({ transactions, deleteMode, onCheckboxChange }) => {
-    const transactionsByDate = transactions.reduce((acc, transaction) => {
-        const { date, amount } = transaction;
-        if (!acc[date]) {
-            acc[date] = { transactions: [], income: 0, expense: 0 };
-        }
-        acc[date].transactions.push(transaction);
-        if (amount > 0) {
-            acc[date].income += amount;
-        } else {
-            acc[date].expense += Math.abs(amount);
-        }
-        return acc;
-    }, {});
+    const transactionsByDate = useMemo(() => groupTransactionsByDate(transactions), [transactions]);
 
     return (
         <div className="transaction-list">
