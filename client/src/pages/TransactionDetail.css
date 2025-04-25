@@ -1,0 +1,110 @@
+.transaction-detail-page {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-type-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    transition: background-color 0.3s;
+}
+
+.transaction-type-btn {
+    &.income-btn.active {
+        background-color: rgb(24, 145, 24);
+        color: white;
+        cursor: default;
+    }
+    &.expense-btn.active {
+        background-color: rgb(235, 103, 85);
+        color: white;
+        cursor: default;
+    }
+}
+
+.transaction-type-btn:hover {
+    background-color: #d0d0d0;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    color: #333;
+}
+
+input, select, textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.transaction-detail-page .header {
+    display: flex;
+    justify-content: center; /* Center align the buttons */
+    gap: 20px; /* Add spacing between buttons */
+    margin-bottom: 20px; /* Add some spacing below the header */
+}
+
+.transaction-detail-page .footer {
+    display: flex;
+    justify-content: center; /* Center align the buttons */
+    gap: 20px; /* Add spacing between buttons */
+    margin-top: 20px;
+}
+
+.save-btn, .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.save-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: #218838;
+}
+
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #c82333;
+}
+
+.currency-input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.currency-symbol {
+    font-size: 16px;
+    color: #333;
+}

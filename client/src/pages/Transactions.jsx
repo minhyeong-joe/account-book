@@ -34,9 +34,9 @@ const Transactions = () => {
         setSelectedTransactions([]);
     }, [year, month]);
 
-    useEffect(() => {
-        console.log('Selected Transactions:', selectedTransactions);
-    }, [selectedTransactions]);
+    // useEffect(() => {
+    //     console.log('Selected Transactions:', selectedTransactions);
+    // }, [selectedTransactions]);
         
 
     // handlers
