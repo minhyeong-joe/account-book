@@ -5,4 +5,19 @@ const formatTime = (time) => {
 	return `${formattedHour}:${minute.toString().padStart(2, "0")} ${ampm}`;
 };
 
-export { formatTime };
+const groupTransactionsByDate = (transactions) =>
+	transactions.reduce((acc, transaction) => {
+		const { date, amount } = transaction;
+		if (!acc[date]) {
+			acc[date] = { transactions: [], income: 0, expense: 0 };
+		}
+		acc[date].transactions.push(transaction);
+		if (amount > 0) {
+			acc[date].income += amount;
+		} else {
+			acc[date].expense += Math.abs(amount);
+		}
+		return acc;
+	}, {});
+
+export { formatTime, groupTransactionsByDate };
