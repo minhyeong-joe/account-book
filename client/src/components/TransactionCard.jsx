@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import Card from '../components/Card';
-import { formatTime } from '../lib/utils';
+import { formatTime, extractTime } from '../lib/utils';
 
 import './TransactionCard.css';
 
@@ -46,17 +46,17 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
                     onClick={(e) => handleRowClick(e, transaction)}
                 >
                     {deleteMode && renderCheckBox(transaction)}
-                    <span className="transaction-category">{transaction.category}</span>
+                    <span className="transaction-category">{transaction.category?.name}</span>
                     <div className="desc-and-time">
                         <span className="transaction-description">{transaction.description}</span>
-                        <span className="transaction-time">{formatTime(transaction.time)}</span>
+                        <span className="transaction-time">{formatTime(extractTime(transaction.datetime))}</span>
                     </div>
                     <span
                         className={`transaction-amount ${
-                            transaction.amount > 0 ? 'income' : 'expense'
+                            transaction.transactionType === 'income'? 'income' : 'expense'
                         }`}
                     >
-                        $ {Math.abs(transaction.amount).toFixed(2)}
+                        $ {transaction.amount.toFixed(2)}
                     </span>
                 </Link>
             ))}

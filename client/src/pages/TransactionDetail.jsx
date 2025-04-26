@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
+import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
+
 import './TransactionDetail.css';
 
 const TransactionDetail = () => {
@@ -9,36 +11,28 @@ const TransactionDetail = () => {
         return new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     }, []);
 
-    const { id } = useParams();
+    // const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const { transaction } = location.state || {};
-    console.log(id);
     console.log(transaction);
-
-    const [transactionType, setTransactionType] = useState('Income');
-    const [dateTime, setDateTime] = useState(localDateTime.toISOString().slice(0, 16));
-    const [paymentMethod, setPaymentMethod] = useState('');
-    const [category, setCategory] = useState('');
-    const [amount, setAmount] = useState('');
-    const [description, setDescription] = useState('');
-    const [currency, setCurrency] = useState('$');
-
-    useEffect(() => {
-        if (transaction) {
-            setTransactionType(transaction.amount > 0 ? 'Income' : 'Expense');
-            const dateTime = transaction.date + 'T' + transaction.time;
-            setDateTime(dateTime || localDateTime.toISOString().slice(0, 16));
-            setPaymentMethod(transaction.paymentMethod || '');
-            setCategory(transaction.category || '');
-            setAmount(Math.abs(transaction.amount) || '');
-            setDescription(transaction.description || '');
-        }
-    }, [transaction, localDateTime]);
+    const defaultDateTime = transaction?.datetime || localDateTime.toISOString().slice(0, 16);
+    
+    const [transactionType, setTransactionType] = useState(transaction?.transactionType || 'income');
+    const [dateTime, setDateTime] = useState(defaultDateTime);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(transaction?.paymentMethod.id || '');
+    // const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(transaction?.category.id || '');
+    const [amount, setAmount] = useState(transaction?.amount || '');
+    const [description, setDescription] = useState(transaction?.description || '');
+    
+    // TODO: fetch payment methods and categories from API
+    const paymentMethods = mockPaymentMethods;
+    const categories = mockCategories.filter(category => category.type === transactionType);
 
     const handleSave = () => {
         // Logic to save the transaction
-        console.log({ transactionType, dateTime, paymentMethod, category, amount, description });
+        console.log({ transactionType, dateTime, selectedPaymentMethod, selectedCategory, amount, description });
     };
 
     const handleCancel = () => {
@@ -49,14 +43,14 @@ const TransactionDetail = () => {
         <div className="transaction-detail-page">
             <div className="header">
                 <button 
-                    className={`transaction-type-btn income-btn ${transactionType === 'Income' ? 'active' : ''}`} 
-                    onClick={() => setTransactionType('Income')}
+                    className={`transaction-type-btn income-btn ${transactionType === 'income' ? 'active' : ''}`} 
+                    onClick={() => setTransactionType('income')}
                 >
                     Income
                 </button>
                 <button 
-                    className={`transaction-type-btn expense-btn ${transactionType === 'Expense' ? 'active' : ''}`} 
-                    onClick={() => setTransactionType('Expense')}
+                    className={`transaction-type-btn expense-btn ${transactionType === 'expense' ? 'active' : ''}`} 
+                    onClick={() => setTransactionType('expense')}
                 >
                     Expense
                 </button>
@@ -75,31 +69,37 @@ const TransactionDetail = () => {
                 <label>
                     Payment Method:
                     <select 
-                        value={paymentMethod} 
-                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        value={selectedPaymentMethod} 
+                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                     >
                         <option value="">Select Payment Method</option>
-                        <option value="Visa">Visa...1234</option>
-                        <option value="MasterCard">MasterCard...5678</option>
+                        {paymentMethods.map(method => (
+                            <option key={method.id} value={method.id}>
+                                {method.name}
+                            </option>
+                        ))}
                     </select>
                 </label>
 
                 <label>
                     Category:
                     <select 
-                        value={category} 
-                        onChange={(e) => setCategory(e.target.value)}
+                        value={selectedCategory} 
+                        onChange={(e) => setSelectedCategory(e.target.value)}
                     >
                         <option value="">Select Category</option>
-                        <option value="Grocery">Grocery</option>
-                        <option value="Entertainment">Entertainment</option>
+                        {categories.map(category => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
                     </select>
                 </label>
 
                 <label>
                     Amount:
                     <div className="currency-input">
-                        <span className="currency-symbol">{currency}</span>
+                        <span className="currency-symbol">$</span>
                         <input 
                             type="number" 
                             value={amount} 

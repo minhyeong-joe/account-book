@@ -7,11 +7,11 @@ import './SummaryCard.css';
 
 const SummaryCard = ({transactions}) => {
     const income = transactions
-        .filter(transaction => transaction.amount > 0)
+        .filter(transaction => transaction.transactionType === 'income')
         .reduce((sum, transaction) => sum + transaction.amount, 0);
     const expense = transactions
-        .filter(transaction => transaction.amount < 0)
-        .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
+        .filter(transaction => transaction.transactionType === 'expense')
+        .reduce((sum, transaction) => sum + transaction.amount, 0);
     const total = income - expense;
 
     return (

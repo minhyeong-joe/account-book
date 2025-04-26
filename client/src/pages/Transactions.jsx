@@ -3,8 +3,9 @@ import { Plus, Trash2, ChevronLeft, ChevronRight, Check, X } from 'lucide-react'
 import { Link } from 'react-router-dom';
 
 import { SummaryCard, TransactionList } from '../components';
-import mockTransactions from '../lib/mockTransactions'; // Mock data for transactions
+import { mockTransactions } from '../lib/mockTransactions'; // Mock data for transactions
 import { MONTH_NAMES } from '../lib/constants';
+import { extractDate, extractYearMonth } from '../lib/utils';
 
 import './Transactions.css';
 
@@ -22,7 +23,7 @@ const Transactions = () => {
         // Fetch transactions from an API or use mock data
         // filter & sort would be handled by the backend in a real-world scenario
         const filteredTransactions = mockTransactions.filter(transaction => {
-            const [transactionYear, transactionMonth] = transaction.date.split('-').map(Number);
+            const [transactionYear, transactionMonth] = extractYearMonth(extractDate(transaction.datetime));
             return transactionYear === year && transactionMonth === month+1;
         }).sort((a, b) => {
             const dateA = new Date(`${a.date}T${a.time}`);
@@ -34,12 +35,6 @@ const Transactions = () => {
         setSelectedTransactions([]);
     }, [year, month]);
 
-    // useEffect(() => {
-    //     console.log('Selected Transactions:', selectedTransactions);
-    // }, [selectedTransactions]);
-        
-
-    // handlers
     const changeMonth = (offset) => {
         const newDate = new Date(year, month + offset, 1);
         setYear(newDate.getFullYear());
