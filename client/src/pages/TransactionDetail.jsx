@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
 
@@ -16,23 +17,28 @@ const TransactionDetail = () => {
     const location = useLocation();
     const { transaction } = location.state || {};
     console.log(transaction);
+
     const defaultDateTime = transaction?.datetime || localDateTime.toISOString().slice(0, 16);
-    
     const [transactionType, setTransactionType] = useState(transaction?.transactionType || 'income');
-    const [dateTime, setDateTime] = useState(defaultDateTime);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(transaction?.paymentMethod.id || '');
-    // const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(transaction?.category.id || '');
-    const [amount, setAmount] = useState(transaction?.amount || '');
-    const [description, setDescription] = useState(transaction?.description || '');
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        defaultValues: {
+            dateTime: defaultDateTime,
+            paymentMethodId: transaction?.paymentMethod.id || '',
+            categoryId: transaction?.category.id || '',
+            amount: transaction?.amount || '',
+            description: transaction?.description || '',
+        },
+    });
     
     // TODO: fetch payment methods and categories from API
     const paymentMethods = mockPaymentMethods;
     const categories = mockCategories.filter(category => category.type === transactionType);
 
-    const handleSave = () => {
+    const onSubmit = (formData) => {
         // Logic to save the transaction
-        console.log({ transactionType, dateTime, selectedPaymentMethod, selectedCategory, amount, description });
+        console.log("Form submitted with data:");
+        console.log(formData);
+        console.log(transactionType);
     };
 
     const handleCancel = () => {
@@ -56,21 +62,24 @@ const TransactionDetail = () => {
                 </button>
             </div>
 
-            <div className="form">
+            <form className="form" onSubmit={handleSubmit(onSubmit)}>
                 <label>
                     Date and Time:
                     <input 
                         type="datetime-local" 
-                        value={dateTime} 
-                        onChange={(e) => setDateTime(e.target.value)} 
+                        {...register('dateTime', { required: true })}
+                        aria-invalid={errors.dateTime ? 'true' : 'false'}
+                        className={errors.dateTime ? 'error' : ''}
                     />
                 </label>
+                {errors.dateTime && <p role='alert' className='field-error-message'>Date and Time are required</p>}
 
                 <label>
                     Payment Method:
                     <select 
-                        value={selectedPaymentMethod} 
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        {...register('paymentMethodId', { required: true })}
+                        aria-invalid={errors.paymentMethodId ? 'true' : 'false'}
+                        className={errors.paymentMethodId ? 'error' : ''}
                     >
                         <option value="">Select Payment Method</option>
                         {paymentMethods.map(method => (
@@ -80,12 +89,14 @@ const TransactionDetail = () => {
                         ))}
                     </select>
                 </label>
+                {errors.paymentMethodId && <p role='alert' className='field-error-message'>Payment Method is required</p>}
 
                 <label>
                     Category:
                     <select 
-                        value={selectedCategory} 
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        {...register('categoryId', { required: true })}
+                        aria-invalid={errors.categoryId ? 'true' : 'false'}
+                        className={errors.categoryId ? 'error' : ''}
                     >
                         <option value="">Select Category</option>
                         {categories.map(category => (
@@ -95,32 +106,43 @@ const TransactionDetail = () => {
                         ))}
                     </select>
                 </label>
+                {errors.categoryId && <p role='alert' className='field-error-message'>Category is required</p>}
 
                 <label>
                     Amount:
                     <div className="currency-input">
                         <span className="currency-symbol">$</span>
                         <input 
-                            type="number" 
-                            value={amount} 
-                            onChange={(e) => setAmount(e.target.value)} 
+                            type="number"
+                            {...register('amount', { required: true, min: 0 })}
+                            min="0"
+                            step="0.01"
+                            aria-invalid={errors.amount ? 'true' : 'false'}
+                            className={errors.amount ? 'error' : ''}
+                            placeholder="0.00"
                         />
                     </div>
                 </label>
+                {errors.amount && <p role='alert' className='field-error-message'>Amount is required and must be a positive number</p>}
 
                 <label>
                     Description:
                     <textarea 
-                        value={description} 
-                        onChange={(e) => setDescription(e.target.value)}
+                        {...register('description', { required: true, maxLength: 100 })}
+                        placeholder="Enter a description for the transaction"
+                        maxLength="100"
+                        aria-invalid={errors.description ? 'true' : 'false'}
+                        className={errors.description ? 'error' : ''}
                     />
                 </label>
-            </div>
+                {errors.description && <p role='alert' className='field-error-message'>Description is required and must be less than 100 characters</p>}
 
-            <div className="footer">
-                <button className="save-btn" onClick={handleSave}>Save</button>
-                <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
-            </div>
+                <div className="footer">
+                    <input className="save-btn" type="submit" value="Save"/>
+                    <input className="cancel-btn" type="button" value="Cancel" onClick={handleCancel} />
+                </div>
+            </form>
+
         </div>
     );
 };
