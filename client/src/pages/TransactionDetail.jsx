@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
@@ -7,18 +7,16 @@ import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
 import './TransactionDetail.css';
 
 const TransactionDetail = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { transaction } = location.state || {};
+    
     const localDateTime = useMemo(() => {
         const now = new Date();
         return new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     }, []);
-
-    // const { id } = useParams();
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { transaction } = location.state || {};
-    console.log(transaction);
-
     const defaultDateTime = transaction?.datetime || localDateTime.toISOString().slice(0, 16);
+
     const [transactionType, setTransactionType] = useState(transaction?.transactionType || 'income');
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -36,9 +34,9 @@ const TransactionDetail = () => {
 
     const onSubmit = (formData) => {
         // Logic to save the transaction
+        formData.transactionType = transactionType;
         console.log("Form submitted with data:");
         console.log(formData);
-        console.log(transactionType);
     };
 
     const handleCancel = () => {
