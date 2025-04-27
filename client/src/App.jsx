@@ -14,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Transactions />} />
         <Route path="/new-transaction" element={<TransactionDetail />} />
+        <Route path="/transaction/:id" element={<TransactionDetail />} />
         <Route path="/payment-methods" element={<PaymentMethods />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="*" element={<NotFound />} />

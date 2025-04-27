@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import Card from '../components/Card';
-import { formatTime } from '../lib/utils';
+import { formatTime, extractTime } from '../lib/utils';
 
 import './TransactionCard.css';
 
 const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCheckboxChange }) => {
+    const checkboxRefs = useRef({});
+
+    const handleRowClick = (e, transaction) => {
+        if (deleteMode) {
+            e.preventDefault();
+            const currentChecked = checkboxRefs.current[transaction.id]?.checked;
+            checkboxRefs.current[transaction.id].checked = !currentChecked;
+            onCheckboxChange(transaction.id);
+        }
+    }
+
+    const renderCheckBox = transaction => (
+        <input
+            type="checkbox"
+            className="delete-checkbox"
+            onClick={(e) => e.stopPropagation()}
+            onChange={() => onCheckboxChange(transaction.id)}
+            ref={(el) => (checkboxRefs.current[transaction.id] = el)}
+        />
+    )
 
     return (
         <Card>
@@ -17,33 +38,30 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
                 </div>
             </div>
             {transactions.map((transaction) => (
-                <div
+                <Link
                     className={`transaction-item${deleteMode ? ' delete-mode' : ''}`}
                     key={transaction.id}
+                    to={deleteMode ? '#' : `/transaction/${transaction.id}`}
+                    state={{ transaction: transaction}}
+                    onClick={(e) => handleRowClick(e, transaction)}
                 >
-                    {deleteMode && (
-                        <input
-                            type="checkbox"
-                            className="delete-checkbox"
-                            onChange={() => onCheckboxChange(transaction.id)}
-                        />
-                    )}
-                    <span className="transaction-category">{transaction.category}</span>
+                    {deleteMode && renderCheckBox(transaction)}
+                    <span className="transaction-category">{transaction.category?.name}</span>
                     <div className="desc-and-time">
                         <span className="transaction-description">{transaction.description}</span>
-                        <span className="transaction-time">{formatTime(transaction.time)}</span>
+                        <span className="transaction-time">{formatTime(extractTime(transaction.datetime))}</span>
                     </div>
                     <span
                         className={`transaction-amount ${
-                            transaction.amount > 0 ? 'income' : 'expense'
+                            transaction.transactionType === 'income'? 'income' : 'expense'
                         }`}
                     >
-                        $ {Math.abs(transaction.amount).toFixed(2)}
+                        $ {transaction.amount.toFixed(2)}
                     </span>
-                </div>
+                </Link>
             ))}
         </Card>
-    )
+    );
 };
 
 export default TransactionCard;
