@@ -33,10 +33,20 @@ const groupTransactionsByDate = (transactions) =>
 		return acc;
 	}, {});
 
+const groupPaymentMethodsByType = (paymentMethods) =>
+	paymentMethods.reduce((acc, payment) => {
+		if (!acc[payment.type.id]) {
+			acc[payment.type.id] = [];
+		}
+		acc[payment.type.id].push(payment);
+		return acc;
+	}, {});
+
 export {
 	formatTime,
 	extractDate,
 	extractYearMonth,
 	extractTime,
 	groupTransactionsByDate,
+	groupPaymentMethodsByType,
 };

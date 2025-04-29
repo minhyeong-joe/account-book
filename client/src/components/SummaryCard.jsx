@@ -2,7 +2,7 @@ import React from 'react';
 
 import Card from './Card';
 
-import './SummaryCard.css';
+import '../styles/SummaryCard.css';
 
 
 const SummaryCard = ({transactions}) => {

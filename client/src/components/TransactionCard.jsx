@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 import { formatTime, extractTime } from '../lib/utils';
 
-import './TransactionCard.css';
+import '../styles/TransactionCard.css';
 
 const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCheckboxChange }) => {
     const checkboxRefs = useRef({});

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, ChevronLeft, ChevronRight, Check, X } from 'lucide-react';
+import { Plus, Trash2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { SummaryCard, TransactionList } from '../components';
@@ -7,7 +7,7 @@ import { mockTransactions } from '../lib/mockTransactions'; // Mock data for tra
 import { MONTH_NAMES } from '../lib/constants';
 import { extractDate, extractYearMonth } from '../lib/utils';
 
-import './Transactions.css';
+import '../styles/Transactions.css';
 
 
 const Transactions = () => {

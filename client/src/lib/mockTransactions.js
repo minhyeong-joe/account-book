@@ -9,19 +9,38 @@ const mockCategories = [
 	{ id: "8", name: "Gift", type: "income" },
 ];
 
-const mockPaymentMethods = [
+const mockPaymentTypes = [
+	{ id: "1", name: "Cash" },
+	{ id: "2", name: "Checking Account" },
+	{ id: "3", name: "Savings Account" },
+	{ id: "4", name: "Credit Card" },
+	{ id: "5", name: "Debit Card" },
+];
+
+let mockPaymentMethods = [
 	{
 		id: "1",
 		name: "Visa...1234",
-		type: "credit",
+		typeId: "4",
 		fullNumber: "1234567812341234",
 	},
-	{ id: "2", name: "Cash", type: "cash", fullNumber: null },
+	{
+		id: "2",
+		name: "Cash",
+		typeId: "1",
+		fullNumber: null,
+	},
 	{
 		id: "3",
 		name: "Account...2369",
-		type: "bank account",
+		typeId: "2",
 		fullNumber: "9876543212369",
+	},
+	{
+		id: "4",
+		name: "Visa...3456",
+		typeId: "4",
+		fullNumber: "1234567812343456",
 	},
 ];
 
@@ -117,4 +136,22 @@ mockTransactions = mockTransactions.map((transaction) => {
 	};
 });
 
-export { mockTransactions, mockCategories, mockPaymentMethods };
+mockPaymentMethods = mockPaymentMethods.map((method) => {
+	const paymentType = mockPaymentTypes.find(
+		(type) => type.id === method.typeId
+	);
+
+	const { typeId: _, ...rest } = method;
+
+	return {
+		...rest,
+		type: paymentType || null,
+	};
+});
+
+export {
+	mockTransactions,
+	mockCategories,
+	mockPaymentMethods,
+	mockPaymentTypes,
+};

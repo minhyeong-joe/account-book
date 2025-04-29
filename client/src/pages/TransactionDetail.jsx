@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
 
-import './TransactionDetail.css';
+import '../styles/TransactionDetail.css';
 
 const TransactionDetail = () => {
     const navigate = useNavigate();
