@@ -1,3 +1,4 @@
+import { useState } from 'react';
 
 import { Plus, Trash2, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,7 +10,8 @@ import { mockPaymentMethods, mockPaymentTypes } from '../lib/mockTransactions';
 import '../styles/PaymentMethods.css';
 
 const PaymentMethods = () => {
-    const groupedPaymentMethods = groupPaymentMethodsByType(mockPaymentMethods);    
+    const groupedPaymentMethods = groupPaymentMethodsByType(mockPaymentMethods);   
+    const [paymentMethods, setPaymentMethods] = useState(groupedPaymentMethods);
 
     const handleEdit = (method) => {
         console.log('Edit clicked!');
@@ -17,8 +19,8 @@ const PaymentMethods = () => {
     }
 
     const handleDelete = (method) => {
-        console.log('Delete clicked!');
-        console.log(method);
+        const updatedPaymentMethods = paymentMethods[method.type.id].filter(item => item.id !== method.id);
+        setPaymentMethods(prevState => ({ ...prevState, [method.type.id]: updatedPaymentMethods }));
     }
 
     return (
@@ -27,12 +29,12 @@ const PaymentMethods = () => {
                 <Card key={key} className='payment-methods-card'>
                     <div className='card-header'>
                         <h2>{type.name}</h2>
-                        <Link to={`/payment-method/new`} className='add-payment-method-link'>
+                        <Link to={`/payment-method/new`} state={{ paymentMethod: { type: type }}} className='add-payment-method-link'>
                             <Plus size={20} className='add-payment-btn' />
                         </Link>
                     </div>
                     <ul className='payment-methods-list'>
-                        {groupedPaymentMethods[type.id]?.map((method, index) => (
+                        {paymentMethods[type.id]?.map((method, index) => (
                             <li key={index} className='payment-methods-item'>
                                 <span>{method.name}</span>
                                 <div className="edit-and-delete-group">
