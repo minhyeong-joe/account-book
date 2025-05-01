@@ -1,0 +1,30 @@
+.payment-methods-card {
+    max-width: 800px;
+    margin: 10px auto;
+}
+
+.payment-methods-list {
+    padding: 10px 30px;
+}
+
+.payment-methods-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.edit-and-delete-group {
+    display: flex;
+    gap: 10px;
+    & svg {
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        &.edit-icon:hover {
+            color: #007bff;
+        }
+        &.delete-icon:hover {
+            color: #dc3545;
+        }
+    }
+}

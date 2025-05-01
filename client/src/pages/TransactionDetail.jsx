@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 
 import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
 
-import './TransactionDetail.css';
+import '../styles/Form.css';
+import '../styles/TransactionDetail.css';
 
 const TransactionDetail = () => {
     const navigate = useNavigate();
@@ -135,7 +136,7 @@ const TransactionDetail = () => {
                 </label>
                 {errors.description && <p role='alert' className='field-error-message'>Description is required and must be less than 100 characters</p>}
 
-                <div className="footer">
+                <div className="form-footer">
                     <input className="save-btn" type="submit" value="Save"/>
                     <input className="cancel-btn" type="button" value="Cancel" onClick={handleCancel} />
                 </div>

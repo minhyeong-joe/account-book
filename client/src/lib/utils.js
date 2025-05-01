@@ -33,10 +33,32 @@ const groupTransactionsByDate = (transactions) =>
 		return acc;
 	}, {});
 
+const groupPaymentMethodsByType = (paymentMethods) =>
+	paymentMethods.reduce((acc, payment) => {
+		if (!acc[payment.type.id]) {
+			acc[payment.type.id] = [];
+		}
+		acc[payment.type.id].push(payment);
+		return acc;
+	}, {});
+
+// format card numbers
+const formatCardNumber = (value) => {
+	return value.replace(/[^0-9]/g, "").replace(/(\d{4})(?=\d)/g, "$1-");
+};
+
+// sanitize card numbers
+const sanitizeCardNumber = (value) => {
+	return value.replace(/[^0-9]/g, "");
+};
+
 export {
 	formatTime,
 	extractDate,
 	extractYearMonth,
 	extractTime,
 	groupTransactionsByDate,
+	groupPaymentMethodsByType,
+	formatCardNumber,
+	sanitizeCardNumber,
 };
