@@ -25,8 +25,8 @@ const PaymentMethods = () => {
 
     return (
         <div>
-            {mockPaymentTypes.map((type, index) => (
-                <Card key={index} className='payment-methods-card'>
+            {mockPaymentTypes.map(type => (
+                <Card key={type.id} className='payment-methods-card'>
                     <div className='card-header'>
                         <h2>{type.name}</h2>
                         <Link to={`/payment-method/new`} state={{ paymentMethod: { type: type }}} className='add-payment-method-link'>
@@ -34,8 +34,8 @@ const PaymentMethods = () => {
                         </Link>
                     </div>
                     <ul className='payment-methods-list'>
-                        {paymentMethods[type.id]?.map((method, index) => (
-                            <li key={index} className='payment-methods-item'>
+                        {paymentMethods[type.id]?.map(method => (
+                            <li key={method.id} className='payment-methods-item'>
                                 <span>{method.name}</span>
                                 <div className="edit-and-delete-group">
                                     <Link to={`/payment-method/${method.id}`} state={{ paymentMethod: method }} className="edit-link">

@@ -42,6 +42,16 @@ const groupPaymentMethodsByType = (paymentMethods) =>
 		return acc;
 	}, {});
 
+// format card numbers
+const formatCardNumber = (value) => {
+	return value.replace(/[^0-9]/g, "").replace(/(\d{4})(?=\d)/g, "$1-");
+};
+
+// sanitize card numbers
+const sanitizeCardNumber = (value) => {
+	return value.replace(/[^0-9]/g, "");
+};
+
 export {
 	formatTime,
 	extractDate,
@@ -49,4 +59,6 @@ export {
 	extractTime,
 	groupTransactionsByDate,
 	groupPaymentMethodsByType,
+	formatCardNumber,
+	sanitizeCardNumber,
 };
