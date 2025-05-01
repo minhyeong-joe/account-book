@@ -1,0 +1,16 @@
+.card-header {
+    display: flex;
+    justify-content: center;;
+}
+
+.add-category-btn {
+    opacity: 0.8;
+    transition: opacity 0.15s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    &:hover {
+        opacity: 1;
+    }
+}
