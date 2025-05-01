@@ -25,8 +25,8 @@ const PaymentMethods = () => {
 
     return (
         <div>
-            {Object.entries(mockPaymentTypes).map(([key, type]) => (
-                <Card key={key} className='payment-methods-card'>
+            {mockPaymentTypes.map((type, index) => (
+                <Card key={index} className='payment-methods-card'>
                     <div className='card-header'>
                         <h2>{type.name}</h2>
                         <Link to={`/payment-method/new`} state={{ paymentMethod: { type: type }}} className='add-payment-method-link'>

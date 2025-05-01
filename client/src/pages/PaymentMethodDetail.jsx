@@ -9,6 +9,8 @@ import '../styles/PaymentMethodDetail.css';
 
 import { mockPaymentTypes } from '../lib/mockTransactions';
 
+const NUMERICAL_DASH_REGEX = /[^0-9]/g; // Regex to allow only numbers and dashes
+
 const PaymentMethodDetail = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
@@ -31,12 +33,12 @@ const PaymentMethodDetail = () => {
 
     // Add a utility function for formatting card numbers
     const formatCardNumber = (value) => {
-        return value.replace(/[^0-9]/g, '').replace(/(\d{4})(?=\d)/g, '$1-');
+        return value.replace(NUMERICAL_DASH_REGEX, '').replace(/(\d{4})(?=\d)/g, '$1-');
     };
 
     // Add a utility function for sanitizing card numbers
     const sanitizeCardNumber = (value) => {
-        return value.replace(/[^0-9]/g, '');
+        return value.replace(NUMERICAL_DASH_REGEX, '');
     };
 
     // Refactor the useEffect and onInput logic to use the utility functions
@@ -119,7 +121,7 @@ const PaymentMethodDetail = () => {
                             {...register('fullNumber', {
                                 // Updated validation logic to check length only if there's a value in the input
                                 validate: value => {
-                                    if (value && !/^[0-9-]*$/.test(value)) {
+                                    if (value && !NUMERICAL_DASH_REGEX.test(value)) {
                                         return 'Only numbers and dashes are allowed';
                                     }
                                     const sanitizedValue = value.replace(/-/g, '');
@@ -146,7 +148,7 @@ const PaymentMethodDetail = () => {
                         />
                     </label>
                 )}
-                {errors.fullNumber && <p role='alert' className='field-error-message'>{errors.fullNumber.message}</p>}
+                {showFullNumber && errors.fullNumber && <p role='alert' className='field-error-message'>{errors.fullNumber.message}</p>}
 
                 <div className="form-footer">
                     <input className="save-btn" type="submit" value="Save"/>
