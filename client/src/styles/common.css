@@ -1,0 +1,74 @@
+.narrow-card {
+    max-width: 800px;
+    margin: 10px auto;
+}
+
+.transaction-type-btn-group {
+    display: flex;
+    justify-content: center; /* Center align the buttons */
+    gap: 20px; /* Add spacing between buttons */
+    margin-bottom: 20px; /* Add some spacing below the header */
+}
+
+.transaction-type-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    transition: background-color 0.3s;
+    &.income-btn.active {
+        background-color: rgb(24, 145, 24);
+        color: white;
+        cursor: default;
+    }
+    &.expense-btn.active {
+        background-color: rgb(235, 103, 85);
+        color: white;
+        cursor: default;
+    }
+    &:hover {
+        background-color: #d0d0d0;
+    }
+}
+
+.list-with-edit-and-delete {
+    padding: 10px 30px;
+    & .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+    }
+    & .edit-and-delete-group {
+        display: flex;
+        gap: 10px;
+        & svg {
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            &.edit-icon:hover {
+                color: #007bff;
+            }
+            &.delete-icon:hover {
+                color: #dc3545;
+            }
+        }
+    }
+}
+
+.confirm-icon {
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    &:hover {
+        color: rgb(24, 145, 24);
+    }
+}
+
+.cancel-icon {
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    &:hover {
+        color: #dc3545;
+    }
+}
+

@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
+import Card from '../components/Card';
 import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
 
 import '../styles/Form.css';
 import '../styles/TransactionDetail.css';
+import '../styles/common.css';
 
 const TransactionDetail = () => {
     const navigate = useNavigate();
@@ -45,8 +47,8 @@ const TransactionDetail = () => {
     };
 
     return (
-        <div className="transaction-detail-page">
-            <div className="header">
+        <Card className="narrow-card">
+            <div className="header transaction-type-btn-group">
                 <button 
                     className={`transaction-type-btn income-btn ${transactionType === 'income' ? 'active' : ''}`} 
                     onClick={() => setTransactionType('income')}
@@ -142,7 +144,7 @@ const TransactionDetail = () => {
                 </div>
             </form>
 
-        </div>
+        </Card>
     );
 };
 

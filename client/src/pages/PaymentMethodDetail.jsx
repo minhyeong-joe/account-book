@@ -6,7 +6,7 @@ import Card from '../components/Card';
 import { formatCardNumber, sanitizeCardNumber } from '../lib/utils';
 
 import '../styles/Form.css';
-import '../styles/PaymentMethodDetail.css';
+import '../styles/common.css';
 
 import { mockPaymentTypes } from '../lib/mockTransactions';
 
@@ -100,7 +100,7 @@ const PaymentMethodDetail = () => {
     }
 
     return (
-        <Card className="payment-method-detail-card">
+        <Card className="narrow-card">
             <form onSubmit={handleSubmit(onSubmit)} className="payment-method-detail-form form">
                 <label>
                     Name:

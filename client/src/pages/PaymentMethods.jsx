@@ -7,7 +7,7 @@ import Card from '../components/Card';
 import { groupPaymentMethodsByType } from '../lib/utils';
 import { mockPaymentMethods, mockPaymentTypes } from '../lib/mockTransactions';
 
-import '../styles/PaymentMethods.css';
+import '../styles/common.css';
 
 const PaymentMethods = () => {
     const groupedPaymentMethods = groupPaymentMethodsByType(mockPaymentMethods);   
@@ -26,16 +26,16 @@ const PaymentMethods = () => {
     return (
         <div>
             {mockPaymentTypes.map(type => (
-                <Card key={type.id} className='payment-methods-card'>
+                <Card key={type.id} className='narrow-card'>
                     <div className='card-header'>
                         <h2>{type.name}</h2>
                         <Link to={`/payment-method/new`} state={{ paymentMethod: { type: type }}} className='add-payment-method-link'>
                             <Plus size={20} className='add-payment-btn' />
                         </Link>
                     </div>
-                    <ul className='payment-methods-list'>
+                    <ul className='list-with-edit-and-delete'>
                         {paymentMethods[type.id]?.map(method => (
-                            <li key={method.id} className='payment-methods-item'>
+                            <li key={method.id} className='list-item'>
                                 <span>{method.name}</span>
                                 <div className="edit-and-delete-group">
                                     <Link to={`/payment-method/${method.id}`} state={{ paymentMethod: method }} className="edit-link">

@@ -5,6 +5,7 @@ import TransactionDetail from './pages/TransactionDetail';
 import Reports from './pages/Reports';
 import PaymentMethods from './pages/PaymentMethods';
 import PaymentMethodDetail from './pages/PaymentMethodDetail';
+import Categories from './pages/Categories';
 import NotFound from './pages/NotFound';
 import { Navbar } from './components';
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/payment-methods" element={<PaymentMethods />} />
         <Route path="/payment-method/:id" element={<PaymentMethodDetail />} />
         <Route path="/payment-method/new" element={<PaymentMethodDetail />} />
+        <Route path="/categories" element={<Categories />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
