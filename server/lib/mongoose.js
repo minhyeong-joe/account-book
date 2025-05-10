@@ -1,9 +1,8 @@
-require("dotenv").config();
 const mongoose = require("mongoose");
 
+const MONGO_URI = process.env.MONGO_DB_URI;
+
 const clientOptions = {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
 	serverApi: {
 		version: "1",
 		strict: true,
@@ -12,10 +11,11 @@ const clientOptions = {
 };
 
 const connectDB = async () => {
-	console.log(process.env.MONGO_DB_URI);
-
 	try {
-		await mongoose.connect(process.env.MONGO_DB_URI, clientOptions);
+		if (!MONGO_URI) {
+			throw new Error("Missing required environment variable: MONGO_DB_URI");
+		}
+		await mongoose.connect(MONGO_URI, clientOptions);
 		await mongoose.connection.db.admin().command({ ping: 1 });
 		console.log("Connected to MongoDB successfully");
 	} catch (error) {
