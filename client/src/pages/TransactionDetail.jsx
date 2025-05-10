@@ -2,12 +2,12 @@ import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
-import Card from '../components/Card';
+import { Card, TransactionTypeBtnGroup } from '../components';
+
 import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
 
 import '../styles/Form.css';
 import '../styles/TransactionDetail.css';
-import '../styles/common.css';
 
 const TransactionDetail = () => {
     const navigate = useNavigate();
@@ -47,21 +47,11 @@ const TransactionDetail = () => {
     };
 
     return (
-        <Card className="narrow-card">
-            <div className="header transaction-type-btn-group">
-                <button 
-                    className={`transaction-type-btn income-btn ${transactionType === 'income' ? 'active' : ''}`} 
-                    onClick={() => setTransactionType('income')}
-                >
-                    Income
-                </button>
-                <button 
-                    className={`transaction-type-btn expense-btn ${transactionType === 'expense' ? 'active' : ''}`} 
-                    onClick={() => setTransactionType('expense')}
-                >
-                    Expense
-                </button>
-            </div>
+        <Card>
+            <TransactionTypeBtnGroup
+                type={transactionType}
+                setType={setTransactionType}
+            />
 
             <form className="form" onSubmit={handleSubmit(onSubmit)}>
                 <label>

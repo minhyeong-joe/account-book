@@ -71,13 +71,13 @@ const Transactions = () => {
 
     return (
         <div className="transactions-page">
-            <div className="header">
+            <div className="transactions-page-header">
                 <div className="month-selector">
                     <button className="prev-month select-btn" onClick={() => changeMonth(-1)}><ChevronLeft size={20} /></button>
                     <span className="current-month">{MONTH_NAMES[month]}, {year}</span>
                     <button className="next-month select-btn" onClick={() => changeMonth(1)}><ChevronRight size={20} /></button>
                 </div>
-                <div className="btn-group">
+                <div className="btn-group transactions-btn-group">
                     {deleteMode ? (
                         <>
                             <button className="delete-confirm-btn" onClick={onDeleteConfirm}><Trash2 size={20} /></button>

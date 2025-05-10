@@ -3,11 +3,12 @@ import { useState } from 'react';
 import { Plus, Trash2, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import Card from '../components/Card';
+import { Card } from '../components';
 import { groupPaymentMethodsByType } from '../lib/utils';
-import { mockPaymentMethods, mockPaymentTypes } from '../lib/mockTransactions';
 
-import '../styles/common.css';
+import '../styles/PaymentMethods.css';
+
+import { mockPaymentMethods, mockPaymentTypes } from '../lib/mockTransactions';
 
 const PaymentMethods = () => {
     const groupedPaymentMethods = groupPaymentMethodsByType(mockPaymentMethods);   
@@ -26,14 +27,14 @@ const PaymentMethods = () => {
     return (
         <div>
             {mockPaymentTypes.map(type => (
-                <Card key={type.id} className='narrow-card'>
+                <Card key={type.id}>
                     <div className='card-header'>
                         <h2>{type.name}</h2>
                         <Link to={`/payment-method/new`} state={{ paymentMethod: { type: type }}} className='add-payment-method-link'>
                             <Plus size={20} className='add-payment-btn' />
                         </Link>
                     </div>
-                    <ul className='list-with-edit-and-delete'>
+                    <ul className="payment-methods-list">
                         {paymentMethods[type.id]?.map(method => (
                             <li key={method.id} className='list-item'>
                                 <span>{method.name}</span>

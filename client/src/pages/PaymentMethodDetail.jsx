@@ -6,7 +6,6 @@ import Card from '../components/Card';
 import { formatCardNumber, sanitizeCardNumber } from '../lib/utils';
 
 import '../styles/Form.css';
-import '../styles/common.css';
 
 import { mockPaymentTypes } from '../lib/mockTransactions';
 
@@ -31,11 +30,11 @@ const PaymentMethodDetail = () => {
     const [showFullNumber, setShowFullNumber] = useState(true);
 
     const isPaymentTypeCard = useCallback(() => {
-        return ['Credit Card', 'Debit Card'].includes(paymentMethodType.name);
+        return ['Credit Card', 'Debit Card'].includes(paymentMethodType?.name);
     }, [paymentMethodType]);
 
     const isPaymentTypeBank = useCallback(() => {
-        return ['Checking Account', 'Savings Account'].includes(paymentMethodType.name);
+        return ['Checking Account', 'Savings Account'].includes(paymentMethodType?.name);
     }, [paymentMethodType]);
 
     useEffect(() => {
@@ -100,7 +99,7 @@ const PaymentMethodDetail = () => {
     }
 
     return (
-        <Card className="narrow-card">
+        <Card>
             <form onSubmit={handleSubmit(onSubmit)} className="payment-method-detail-form form">
                 <label>
                     Name:

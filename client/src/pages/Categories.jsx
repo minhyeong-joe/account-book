@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 
-import Card from '../components/Card';
-import EditableListItem from '../components/EditableListItem';
+import { Card, EditableListItem, TransactionTypeBtnGroup } from '../components';
 
 import '../styles/Categories.css';
-import '../styles/common.css';
 
 import { mockCategories } from '../lib/mockTransactions';
 
@@ -14,6 +12,7 @@ const Categories = () => {
     const [categories, setCategories] = useState([]);
 
     console.log(categories);
+    
     
     useEffect(() => {
         // Fetch categories based on the selected transaction type
@@ -31,6 +30,7 @@ const Categories = () => {
             id: nextId,
             name: '', // Empty name for user input
             type: transactionType, // Current transaction type
+            isNew: true,
         };
 
         // Add the new category to the list
@@ -39,9 +39,16 @@ const Categories = () => {
 
     const handleEdit = (category, newName) => {
         // Update the category name
-        const updatedCategories = categories.map(item => 
-            item.id === category.id ? { ...item, name: newName } : item
-        );
+        const updatedCategories = categories.map(item => {
+            if (item.id === category.id) {
+                if (item.isNew) {
+                    const { isNew: _, ...rest } = item;
+                    item = { ...rest };
+                }
+                return { ...item, name: newName };
+            }
+            return item;
+        });
         setCategories(updatedCategories);
     }
 
@@ -53,35 +60,25 @@ const Categories = () => {
     }
 
     return (
-        <Card className='narrow-card'>
-            <div className='header transaction-type-btn-group'>
-                <button 
-                    className={`transaction-type-btn income-btn ${transactionType === 'income' ? 'active' : ''}`} 
-                    onClick={() => setTransactionType('income')}
-                >
-                    Income
-                </button>
-                <button 
-                    className={`transaction-type-btn expense-btn ${transactionType === 'expense' ? 'active' : ''}`} 
-                    onClick={() => setTransactionType('expense')}
-                >
-                    Expense
-                </button>
-            </div>
+        <Card className="categories-card">
+            <TransactionTypeBtnGroup
+                type={transactionType}
+                setType={setTransactionType}
+            />
             <div className='card-header'>
                 <span className='add-category-btn' onClick={handleAddNew}>
                     <Plus size={20} className='add-category-icon' />
                     <span className='add-category-text'>Add New</span>
                 </span>
             </div>
-            <ul className='list-with-edit-and-delete'>
+            <ul>
                 {categories.map(category => (
                     <EditableListItem
                         key={category.id}
                         item={category}
-                        editMode={category.name === ''} // Set editMode to true for new categories
                         onEdit={(newName) => handleEdit(category, newName)}
                         onDelete={() => handleDelete(category)}
+                        isNew={category.isNew}
                     />
                 ))}
             </ul>

@@ -30,7 +30,7 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
 
     return (
         <Card>
-            <div className="card-header">
+            <div className="transaction-card-header card-header">
                 <span className="transaction-date">{date}</span>
                 <div className="daily-total">
                     <span className="income">$ {income.toFixed(2)}</span>
