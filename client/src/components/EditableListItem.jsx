@@ -2,10 +2,10 @@ import { useState } from 'react';
 
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 
-import '../styles/common.css';
+import '../styles/EditableListItem.css';
 
-const EditableListItem = ({ item, onEdit, onDelete, editMode: initialEditMode = false }) => {
-    const [editMode, setEditMode] = useState(initialEditMode);
+const EditableListItem = ({ item, onEdit, onDelete, isNew }) => {
+    const [editMode, setEditMode] = useState(isNew);
     const [newName, setNewName] = useState(item.name);
 
     const handleEdit = () => {
@@ -18,21 +18,21 @@ const EditableListItem = ({ item, onEdit, onDelete, editMode: initialEditMode = 
     };
 
     const handleConfirm = () => {
-        console.log('Confirm clicked!');
-        console.log(item);
-        console.log(newName);
         onEdit(newName);
         setEditMode(false);
     };
 
     const handleCancel = () => {
-        console.log('Cancel clicked!');
         setEditMode(false);
-        setNewName(item.name); // Reset to original name when canceling
+        if (isNew) {
+            onDelete(item); // Remove the item if it's new and edit is canceled
+        } else {
+            setNewName(item.name); // Reset to original name when canceling
+        }
     };
 
     return (
-        <li className='list-item'>
+        <li className='editable-list-item'>
             {editMode ? (
                 <input
                     type="text"

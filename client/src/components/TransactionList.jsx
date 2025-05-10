@@ -8,7 +8,7 @@ const TransactionList = ({ transactions, deleteMode, onCheckboxChange }) => {
     const transactionsByDate = useMemo(() => groupTransactionsByDate(transactions), [transactions]);
 
     return (
-        <div className="transaction-list">
+        <div>
             {Object.entries(transactionsByDate).map(([date, { transactions, income, expense }]) => (
                 <TransactionCard
                     key={date}

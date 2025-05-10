@@ -1,14 +1,10 @@
-.transactions-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 15px;
-}
-
-.header {
+.transactions-page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .month-selector {
@@ -39,10 +35,7 @@
     color: #333;
 }
 
-.btn-group {
-    display: flex;
-    gap: 10px;
-
+.transactions-btn-group {
     button {
         padding: 5px 25px;
         border: none;

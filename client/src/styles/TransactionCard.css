@@ -1,13 +1,3 @@
-.transactions-page .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #ccc;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
 .daily-total>span {
     margin: 0 10px;
 }
