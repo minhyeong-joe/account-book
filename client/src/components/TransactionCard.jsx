@@ -46,7 +46,7 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
                     onClick={(e) => handleRowClick(e, transaction)}
                 >
                     {deleteMode && renderCheckBox(transaction)}
-                    <span className="transaction-category">{transaction.category?.name}</span>
+                    <span className="transaction-category">{transaction.category}</span>
                     <div className="desc-and-time">
                         <span className="transaction-description">{transaction.description}</span>
                         <span className="transaction-time">{formatTime(extractTime(transaction.datetime))}</span>

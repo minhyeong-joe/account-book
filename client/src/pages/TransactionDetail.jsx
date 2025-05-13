@@ -24,8 +24,8 @@ const TransactionDetail = () => {
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             dateTime: defaultDateTime,
-            paymentMethodId: transaction?.paymentMethod.id || '',
-            categoryId: transaction?.category.id || '',
+            paymentMethod: transaction?.paymentMethod || '',
+            category: transaction?.category || '',
             amount: transaction?.amount || '',
             description: transaction?.description || '',
         },
@@ -68,13 +68,13 @@ const TransactionDetail = () => {
                 <label>
                     Payment Method:
                     <select 
-                        {...register('paymentMethodId', { required: true })}
-                        aria-invalid={errors.paymentMethodId ? 'true' : 'false'}
-                        className={errors.paymentMethodId ? 'error' : ''}
+                        {...register('paymentMethod', { required: true })}
+                        aria-invalid={errors.paymentMethod ? 'true' : 'false'}
+                        className={errors.paymentMethod ? 'error' : ''}
                     >
                         <option value="">Select Payment Method</option>
                         {paymentMethods.map(method => (
-                            <option key={method.id} value={method.id}>
+                            <option key={method.id} value={method.name}>
                                 {method.name}
                             </option>
                         ))}
@@ -85,13 +85,13 @@ const TransactionDetail = () => {
                 <label>
                     Category:
                     <select 
-                        {...register('categoryId', { required: true })}
-                        aria-invalid={errors.categoryId ? 'true' : 'false'}
-                        className={errors.categoryId ? 'error' : ''}
+                        {...register('category', { required: true })}
+                        aria-invalid={errors.category ? 'true' : 'false'}
+                        className={errors.category ? 'error' : ''}
                     >
                         <option value="">Select Category</option>
                         {categories.map(category => (
-                            <option key={category.id} value={category.id}>
+                            <option key={category.id} value={category.name}>
                                 {category.name}
                             </option>
                         ))}

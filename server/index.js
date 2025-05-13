@@ -9,7 +9,7 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-	res.send("Welcome to the Express server!");
+	res.send("This is root API");
 });
 
 /* startServer: await DB connection before listening */

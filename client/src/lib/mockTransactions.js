@@ -48,93 +48,76 @@ let mockTransactions = [
 	{
 		id: "1",
 		datetime: "2025-03-15T10:30",
-		categoryId: "1",
+		category: "Groceries",
 		description: "Bought vegetables and fruits",
 		amount: 50.25,
 		transactionType: "expense",
-		paymentMethodId: "1",
+		paymentMethod: "Visa...1234",
 	},
 	{
 		id: "2",
 		datetime: "2025-03-15T09:00",
-		categoryId: "2",
+		category: "Salary",
 		description: "Monthly salary",
 		amount: 3000.0,
 		transactionType: "income",
-		paymentMethodId: "3",
+		paymentMethod: "Account...2369",
 	},
 	{
 		id: "3",
 		datetime: "2025-03-20T19:45",
-		categoryId: "3",
+		category: "Dining",
 		description: "Dinner at a restaurant",
 		amount: 75.0,
 		transactionType: "expense",
-		paymentMethodId: "2",
+		paymentMethod: "Cash",
 	},
 	{
 		id: "4",
 		datetime: "2025-04-10T08:15",
-		categoryId: "4",
+		category: "Transport",
 		description: "Monthly metro pass",
 		amount: 100.0,
 		transactionType: "expense",
-		paymentMethodId: "1",
+		paymentMethod: "Visa...1234",
 	},
 	{
 		id: "5",
 		datetime: "2025-04-14T20:00",
-		categoryId: "5",
+		category: "Entertainment",
 		description: "Movie tickets",
 		amount: 30.0,
 		transactionType: "expense",
-		paymentMethodId: "2",
+		paymentMethod: "Cash",
 	},
 	{
 		id: "6",
 		datetime: "2025-04-14T14:00",
-		categoryId: "6",
+		category: "Freelance",
 		description: "Freelance project payment",
 		amount: 500.0,
 		transactionType: "income",
-		paymentMethodId: "3",
+		paymentMethod: "Account...2369",
 	},
 	{
 		id: "7",
 		datetime: "2025-04-20T16:30",
-		categoryId: "7",
+		category: "Shopping",
 		description: "Bought new clothes",
 		amount: 200.0,
 		transactionType: "expense",
-		paymentMethodId: "1",
+		paymentMethod: "Visa...1234",
 	},
 	{
 		id: "8",
 		datetime: "2025-04-22T12:00",
-		categoryId: "8",
+		category: "Gift",
 		description: "Received birthday gift",
 		amount: 100.0,
 		transactionType: "income",
-		paymentMethodId: "2",
+		paymentMethod: "Cash",
 	},
 ];
-
-mockTransactions = mockTransactions.map((transaction) => {
-	const category = mockCategories.find(
-		(cat) => cat.id === transaction.categoryId
-	);
-	const paymentMethod = mockPaymentMethods.find(
-		(method) => method.id === transaction.paymentMethodId
-	);
-
-	const { categoryId: _, paymentMethodId: __, ...rest } = transaction;
-
-	return {
-		...rest,
-		category: category || null,
-		paymentMethod: paymentMethod || null,
-	};
-});
 
 mockPaymentMethods = mockPaymentMethods.map((method) => {
 	const paymentType = mockPaymentTypes.find(
