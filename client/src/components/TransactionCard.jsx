@@ -9,9 +9,6 @@ import '../styles/TransactionCard.css';
 const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCheckboxChange }) => {
     const checkboxRefs = useRef({});
 
-    console.log(transactions);
-    
-
     const handleRowClick = (e, transaction) => {
         if (deleteMode) {
             e.preventDefault();

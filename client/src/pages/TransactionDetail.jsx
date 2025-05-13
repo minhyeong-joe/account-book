@@ -35,9 +35,6 @@ const TransactionDetail = () => {
     const paymentMethods = mockPaymentMethods;
     const categories = mockCategories.filter(category => category.type === transactionType);
 
-    console.log(categories);
-    
-
     const onSubmit = (formData) => {
         // Logic to save the transaction
         formData.transactionType = transactionType;
