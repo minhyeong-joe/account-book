@@ -9,6 +9,9 @@ import '../styles/TransactionCard.css';
 const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCheckboxChange }) => {
     const checkboxRefs = useRef({});
 
+    console.log(transactions);
+    
+
     const handleRowClick = (e, transaction) => {
         if (deleteMode) {
             e.preventDefault();
@@ -46,7 +49,7 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
                     onClick={(e) => handleRowClick(e, transaction)}
                 >
                     {deleteMode && renderCheckBox(transaction)}
-                    <span className="transaction-category">{transaction.category?.name}</span>
+                    <span className="transaction-category">{transaction.category}</span>
                     <div className="desc-and-time">
                         <span className="transaction-description">{transaction.description}</span>
                         <span className="transaction-time">{formatTime(extractTime(transaction.datetime))}</span>
