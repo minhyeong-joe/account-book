@@ -1,13 +1,13 @@
 // This script seeds the database with initial data for payment types. //
 
 // Import mongoose connection and PaymentType model
-const { connectDB } = require("../../lib/mongoose");
-const {
+import { connectDB } from "../../lib/mongoose.mjs";
+import {
 	PaymentType,
 	Category,
 	PaymentMethod,
 	Transaction,
-} = require("./models");
+} from "./models.mjs";
 
 // Mock payment types (referenced from mockTransactions.js)
 const paymentTypes = [
