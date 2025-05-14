@@ -12,18 +12,11 @@ const getPaymentMethods = async (req, res) => {
 // POST /payment-methods - Create a new payment method
 const createPaymentMethod = async (req, res) => {
 	const { name, typeId, fullNumber } = req.body;
-
-	// Validate required fields
-	if (!name || !typeId) {
-		return res.status(400).json({ message: "Name and typeId are required" });
-	}
-
 	// Check if payment method already exists
 	const existingPaymentMethod = await PaymentMethod.findOne({ name });
 	if (existingPaymentMethod) {
 		return res.status(400).json({ message: "Payment method already exists" });
 	}
-
 	// Create new payment method
 	const newPaymentMethod = new PaymentMethod({
 		name,
@@ -38,18 +31,6 @@ const createPaymentMethod = async (req, res) => {
 // PATCH /payment-methods/:id - Update a payment method
 const updatePaymentMethod = async (req, res) => {
 	const { name, typeId, fullNumber } = req.body;
-
-	// Validate required fields
-	if (!name || !typeId) {
-		return res.status(400).json({ message: "Name and typeId are required" });
-	}
-
-	// validate payment method ID
-	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-		return res.status(400).json({ message: "Invalid payment method ID" });
-	}
-
-	// Check if payment method exists
 	const paymentMethod = await PaymentMethod.findByIdAndUpdate(
 		req.params.id,
 		{ name, typeId, fullNumber },
@@ -64,12 +45,6 @@ const updatePaymentMethod = async (req, res) => {
 
 // DELETE /payment-methods/:id - Delete a payment method
 const deletePaymentMethod = async (req, res) => {
-	// validate payment method ID
-	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-		return res.status(400).json({ message: "Invalid payment method ID" });
-	}
-
-	// Check if payment method exists
 	const paymentMethod = await PaymentMethod.findByIdAndDelete(req.params.id);
 	if (!paymentMethod) {
 		return res.status(404).json({ message: "Payment method not found" });

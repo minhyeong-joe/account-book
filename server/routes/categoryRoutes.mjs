@@ -7,11 +7,17 @@ import {
 	updateCategory,
 	deleteCategory,
 } from "../controllers/categoryController.mjs";
+import { requireBody, validateId, asyncHandler } from "../utils/validation.js";
 
 // Category routes under "/categories"
-router.get("/", getCategories);
-router.post("/", createCategory);
-router.patch("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+router.get("/", asyncHandler(getCategories));
+router.post("/", requireBody("name", "type"), asyncHandler(createCategory));
+router.patch(
+	"/:id",
+	validateId("id"),
+	requireBody("name"),
+	asyncHandler(updateCategory)
+);
+router.delete("/:id", validateId("id"), asyncHandler(deleteCategory));
 
 export default router;

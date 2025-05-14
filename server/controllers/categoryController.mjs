@@ -1,26 +1,26 @@
 import { Category } from "../utils/mongo/models.mjs";
-import mongoose from "mongoose";
 
+// GET /categories - List all categories
 const getCategories = async (req, res) => {
 	const categories = await Category.find().select("-__v");
 	res.status(200).json(categories);
 };
 
+// POST /categories - Create a new category
 const createCategory = async (req, res) => {
 	const { name, type } = req.body;
-
-	// Validate required fields
-	if (!name || !type) {
-		return res.status(400).json({ message: "Name and Type are required" });
+	// Validate type
+	const VALID_TYPES = ["income", "expense"];
+	if (!VALID_TYPES.includes(type)) {
+		return res
+			.status(400)
+			.json({ message: `Type must be one of ${VALID_TYPES.join(", ")}` });
 	}
-
 	// Check if category with the same name and type already exists
 	const existingCategory = await Category.findOne({ name, type });
 	if (existingCategory) {
 		return res.status(400).json({ message: "Category already exists" });
 	}
-
-	// Create new category
 	const newCategory = new Category({
 		name,
 		type,
@@ -30,20 +30,9 @@ const createCategory = async (req, res) => {
 	res.status(201).json(newCategory);
 };
 
+// PATCH /categories/:id - Update a category
 const updateCategory = async (req, res) => {
 	const { name } = req.body;
-
-	// Validate required fields
-	if (!name) {
-		return res.status(400).json({ message: "Name is required" });
-	}
-
-	// validate category ID
-	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-		return res.status(400).json({ message: "Invalid category ID" });
-	}
-
-	// Check if category exists
 	const category = await Category.findByIdAndUpdate(
 		req.params.id,
 		{ name },
@@ -56,18 +45,12 @@ const updateCategory = async (req, res) => {
 	res.status(200).json(category);
 };
 
+// DELETE /categories/:id - Delete a category
 const deleteCategory = async (req, res) => {
-	// validate category ID
-	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-		return res.status(400).json({ message: "Invalid category ID" });
-	}
-
-	// Check if category exists
 	const category = await Category.findByIdAndDelete(req.params.id);
 	if (!category) {
 		return res.status(404).json({ message: "Category not found" });
 	}
-
 	res.status(200).json({ message: "Category deleted successfully" });
 };
 

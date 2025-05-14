@@ -7,14 +7,24 @@ import {
 	deletePaymentMethod,
 	getPaymentMethodTypes,
 } from "../controllers/paymentMethodController.mjs";
+import { requireBody, validateId, asyncHandler } from "../utils/validation.js";
 
 // Payment Method routes under "/payment-methods"
-router.get("/", getPaymentMethods);
-router.post("/", createPaymentMethod);
-router.patch("/:id", updatePaymentMethod);
-router.delete("/:id", deletePaymentMethod);
+router.get("/", asyncHandler(getPaymentMethods));
+router.post(
+	"/",
+	requireBody("name", "typeId"),
+	asyncHandler(createPaymentMethod)
+);
+router.patch(
+	"/:id",
+	validateId("id"),
+	requireBody("name", "typeId"),
+	asyncHandler(updatePaymentMethod)
+);
+router.delete("/:id", validateId("id"), asyncHandler(deletePaymentMethod));
 
 // Payment Method Type route
-router.get("/types", getPaymentMethodTypes);
+router.get("/types", asyncHandler(getPaymentMethodTypes));
 
 export default router;
