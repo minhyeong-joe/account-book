@@ -30,6 +30,11 @@ app.get("/", (req, res) => {
 // Payment method routes
 app.use("/payment-methods", paymentMethodRoutes);
 
+// catch-all route for 404 errors
+app.use((req, res) => {
+	res.status(404).json({ message: "Route not found" });
+});
+
 // Error handling middleware (always after all routes)
 app.use(errorLogger);
 
