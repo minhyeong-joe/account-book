@@ -13,6 +13,9 @@ const CategorySchema = new mongoose.Schema({
 	},
 });
 
+// Compound unique index for (name, type)
+CategorySchema.index({ name: 1, type: 1 }, { unique: true });
+
 const PaymentTypeSchema = new mongoose.Schema({
 	name: {
 		type: String,
