@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const CategorySchema = new mongoose.Schema({
 	name: {
@@ -70,9 +70,4 @@ const PaymentType = mongoose.model("PaymentType", PaymentTypeSchema);
 const PaymentMethod = mongoose.model("PaymentMethod", PaymentMethodSchema);
 const Transaction = mongoose.model("Transaction", TransactionSchema);
 
-module.exports = {
-	Category,
-	PaymentType,
-	PaymentMethod,
-	Transaction,
-};
+export { Category, PaymentType, PaymentMethod, Transaction };
