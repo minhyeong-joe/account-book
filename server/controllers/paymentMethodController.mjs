@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { PaymentType, PaymentMethod } from "../utils/mongo/models.mjs";
 
 // GET /payment-methods - List all payment methods
@@ -43,6 +44,11 @@ const updatePaymentMethod = async (req, res) => {
 		return res.status(400).json({ message: "Name and typeId are required" });
 	}
 
+	// validate payment method ID
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+		return res.status(400).json({ message: "Invalid payment method ID" });
+	}
+
 	// Check if payment method exists
 	const paymentMethod = await PaymentMethod.findByIdAndUpdate(
 		req.params.id,
@@ -58,6 +64,11 @@ const updatePaymentMethod = async (req, res) => {
 
 // DELETE /payment-methods/:id - Delete a payment method
 const deletePaymentMethod = async (req, res) => {
+	// validate payment method ID
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+		return res.status(400).json({ message: "Invalid payment method ID" });
+	}
+
 	// Check if payment method exists
 	const paymentMethod = await PaymentMethod.findByIdAndDelete(req.params.id);
 	if (!paymentMethod) {
