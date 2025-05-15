@@ -11,6 +11,7 @@ import { debuggingLogger, errorLogger } from "./utils/middleware/logging.mjs";
 // API routes
 import paymentMethodRoutes from "./routes/paymentMethodRoutes.mjs";
 import categoryRoutes from "./routes/categoryRoutes.mjs";
+import transactionRoutes from "./routes/transactionRoutes.mjs";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 // Payment method routes
 app.use("/payment-methods", paymentMethodRoutes);
 app.use("/categories", categoryRoutes);
+app.use("/transactions", transactionRoutes);
 
 // catch-all route for 404 errors
 app.use((req, res) => {
