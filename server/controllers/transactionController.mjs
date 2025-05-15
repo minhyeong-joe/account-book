@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import { Transaction } from "../utils/mongo/models.mjs";
 import {
 	getMonthDatetimeRangeFilter,
@@ -94,11 +96,13 @@ const updateTransaction = async (req, res) => {
 		description,
 		amount,
 	} = req.body;
+	const VALID_TYPES = ["income", "expense"];
+	let typeLower = transactionType.toLowerCase();
 	const transaction = await Transaction.findByIdAndUpdate(
 		req.params.id,
 		{
 			datetime,
-			transactionType,
+			transactionType: typeLower,
 			paymentMethod,
 			category,
 			description,
@@ -128,6 +132,11 @@ const deleteBatchTransactions = async (req, res) => {
 	let { ids } = req.body;
 	if (typeof ids === "string") {
 		ids = [ids];
+	}
+	for (const id of ids) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ message: "Invalid ID" });
+		}
 	}
 	const transactions = await Transaction.deleteMany({
 		_id: { $in: ids },
