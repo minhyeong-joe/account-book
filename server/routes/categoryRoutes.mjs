@@ -7,7 +7,7 @@ import {
 	updateCategory,
 	deleteCategory,
 } from "../controllers/categoryController.mjs";
-import { requireBody, validateId, asyncHandler } from "../utils/validation.js";
+import { requireBody, validateId, asyncHandler } from "../utils/validation.mjs";
 
 // Category routes under "/categories"
 router.get("/", asyncHandler(getCategories));
