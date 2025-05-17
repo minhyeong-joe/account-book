@@ -4,8 +4,17 @@ import { PaymentType, PaymentMethod } from "../utils/mongo/models.mjs";
 // GET /payment-methods - List all payment methods
 const getPaymentMethods = async (req, res) => {
 	const paymentMethods = await PaymentMethod.find()
-		.populate("typeId", "-__v")
-		.select("-__v");
+		.populate({ path: "typeId", select: "-__v", as: "type" })
+		.select("-__v")
+		.lean();
+
+	// Rename populated field from typeId to type
+	paymentMethods.forEach((pm) => {
+		if (pm.typeId) {
+			pm.type = pm.typeId;
+			delete pm.typeId;
+		}
+	});
 	res.status(200).json(paymentMethods);
 };
 

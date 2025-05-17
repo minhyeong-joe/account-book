@@ -1,18 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Plus, Trash2, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { Card } from '../components';
-import { groupPaymentMethodsByType } from '../lib/utils';
+import { groupPaymentMethodsByType, getLast4Digits } from '../lib/utils';
 
 import '../styles/PaymentMethods.css';
 
-import { mockPaymentMethods, mockPaymentTypes } from '../lib/mockTransactions';
+import { getPaymentMethods, getPaymentMethodTypes, deletePaymentMethod } from '../apis/paymentMethods';
 
 const PaymentMethods = () => {
-    const groupedPaymentMethods = groupPaymentMethodsByType(mockPaymentMethods);   
-    const [paymentMethods, setPaymentMethods] = useState(groupedPaymentMethods);
+    const [paymentMethods, setPaymentMethods] = useState({});
+    const [paymentTypes, setPaymentTypes] = useState([]);
+    
+    useEffect(() => {
+        const fetchPaymentMethods = async () => {
+            try {
+                const paymentMethods = await getPaymentMethods();
+                setPaymentMethods(groupPaymentMethodsByType(paymentMethods));
+            } catch (error) {
+                console.error('Error fetching payment methods:', error);
+            }
+        };
+
+        const fetchPaymentMethodTypes = async () => {
+            try {
+                const paymentMethodTypes = await getPaymentMethodTypes();
+                setPaymentTypes(paymentMethodTypes);
+            } catch (error) {
+                console.error('Error fetching payment method types:', error);
+            }
+        };
+
+        fetchPaymentMethods();
+        fetchPaymentMethodTypes();
+    }, []);
 
     const handleEdit = (method) => {
         console.log('Edit clicked!');
@@ -20,14 +43,21 @@ const PaymentMethods = () => {
     }
 
     const handleDelete = (method) => {
-        const updatedPaymentMethods = paymentMethods[method.type.id].filter(item => item.id !== method.id);
-        setPaymentMethods(prevState => ({ ...prevState, [method.type.id]: updatedPaymentMethods }));
+        deletePaymentMethod(method._id)
+            .then(() => {
+                console.log('Payment method deleted successfully');
+                const updatedPaymentMethods = paymentMethods[method.type._id].filter(item => item._id !== method._id);
+                setPaymentMethods(prevState => ({ ...prevState, [method.type._id]: updatedPaymentMethods }));
+            })
+            .catch((error) => {
+                console.error('Error deleting payment method:', error);
+            });
     }
 
     return (
         <div>
-            {mockPaymentTypes.map(type => (
-                <Card key={type.id}>
+            {paymentTypes?.map(type => (
+                <Card key={type._id}>
                     <div className='card-header'>
                         <h2>{type.name}</h2>
                         <Link to={`/payment-method/new`} state={{ paymentMethod: { type: type }}} className='add-payment-method-link'>
@@ -35,11 +65,11 @@ const PaymentMethods = () => {
                         </Link>
                     </div>
                     <ul className="payment-methods-list">
-                        {paymentMethods[type.id]?.map(method => (
-                            <li key={method.id} className='list-item'>
-                                <span>{method.name}</span>
+                        {paymentMethods?.[type._id]?.map(method => (
+                            <li key={method._id} className='list-item'>
+                                <span>{method.name}{method.fullNumber && ` ... ${getLast4Digits(method.fullNumber)}`}</span>
                                 <div className="edit-and-delete-group">
-                                    <Link to={`/payment-method/${method.id}`} state={{ paymentMethod: method }} className="edit-link">
+                                    <Link to={`/payment-method/${method._id}`} state={{ paymentMethod: method }} className="edit-link">
                                         <Pencil size={20} className="edit-icon" onClick={() => handleEdit(method)} />
                                     </Link>
                                     <Trash2 size={20} className="delete-icon" onClick={() => handleDelete(method)} />

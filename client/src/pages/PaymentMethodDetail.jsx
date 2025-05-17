@@ -7,22 +7,45 @@ import { formatCardNumber, sanitizeCardNumber } from '../lib/utils';
 
 import '../styles/Form.css';
 
-import { mockPaymentTypes } from '../lib/mockTransactions';
+import { getPaymentMethodTypes, createPaymentMethod, updatePaymentMethod } from '../apis/paymentMethods';
 
 
 const PaymentMethodDetail = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { paymentMethod } = state || {};
-    const { register, handleSubmit, formState: { errors }, watch, setValue, getValues } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch, setValue, getValues, reset } = useForm({
         defaultValues: {
             name: paymentMethod?.name || '',
-            typeId: paymentMethod?.type?.id || '',
+            typeId: paymentMethod?.type?._id || '',
             fullNumber: paymentMethod?.fullNumber || ''
         }
     });
+    const [paymentTypes, setPaymentTypes] = useState([]);
 
-    const getPaymentTypeById = (id) => mockPaymentTypes.find(paymentType => paymentType.id === id);
+    useEffect(() => {
+        const fetchPaymentMethodTypes = async () => {
+            try {
+                const paymentMethodTypes = await getPaymentMethodTypes();
+                setPaymentTypes(paymentMethodTypes);
+            } catch (error) {
+                console.error('Error fetching payment method types:', error);
+            }
+        };
+        fetchPaymentMethodTypes();
+    }, []);
+
+    useEffect(() => {
+        if (paymentTypes.length > 0) {
+            reset({
+                name: paymentMethod?.name || '',
+                typeId: paymentMethod?.type?._id || '',
+                fullNumber: paymentMethod?.fullNumber || ''
+            });
+        }
+    }, [paymentMethod, paymentTypes, reset]);
+
+    const getPaymentTypeById = (id) => paymentTypes.find(paymentType => paymentType._id === id);
     const selectedTypeId = watch('typeId'); // Watch for changes in the dropdown
     const paymentMethodType = getPaymentTypeById(selectedTypeId);
 
@@ -85,13 +108,31 @@ const PaymentMethodDetail = () => {
         return true;
     }
 
+    const handleSuccess = () => {
+        navigate('/payment-methods'); // Navigate to the payment methods page after successful operation
+    };
+
     const onSubmit = (data) => {
         const sanitizedData = {
             ...data,
             fullNumber: data.fullNumber.replace(/-/g, ''), // Remove dashes
         };
         console.log('Form submitted:', sanitizedData);
-        // Handle form submission logic here
+        if (paymentMethod._id) {
+            // Update existing payment method
+            updatePaymentMethod({ ...sanitizedData, _id: paymentMethod._id })
+                .then(handleSuccess)
+                .catch(error => {
+                    console.error('Error updating payment method:', error);
+                });
+        } else {
+            // Create new payment method
+            createPaymentMethod(sanitizedData)
+                .then(handleSuccess)
+                .catch(error => {
+                    console.error('Error creating payment method:', error);
+                });
+        }
     };
 
     const handleCancel = () => {
@@ -121,8 +162,8 @@ const PaymentMethodDetail = () => {
                         className={errors.typeId ? 'error' : ''}
                     >
                         <option value="">Select Payment Method Type</option>
-                        {mockPaymentTypes.map(paymentType => (
-                            <option key={paymentType.id} value={paymentType.id}>
+                        {paymentTypes.map(paymentType => (
+                            <option key={paymentType._id} value={paymentType._id}>
                                 {paymentType.name}
                             </option>
                         ))}

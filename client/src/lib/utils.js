@@ -35,10 +35,10 @@ const groupTransactionsByDate = (transactions) =>
 
 const groupPaymentMethodsByType = (paymentMethods) =>
 	paymentMethods.reduce((acc, payment) => {
-		if (!acc[payment.type.id]) {
-			acc[payment.type.id] = [];
+		if (!acc[payment.type._id]) {
+			acc[payment.type._id] = [];
 		}
-		acc[payment.type.id].push(payment);
+		acc[payment.type._id].push(payment);
 		return acc;
 	}, {});
 
@@ -52,6 +52,11 @@ const sanitizeCardNumber = (value) => {
 	return value.replace(/[^0-9]/g, "");
 };
 
+// get last 4 digits of card or bank number
+const getLast4Digits = (value) => {
+	return value.slice(-4);
+};
+
 export {
 	formatTime,
 	extractDate,
@@ -61,4 +66,5 @@ export {
 	groupPaymentMethodsByType,
 	formatCardNumber,
 	sanitizeCardNumber,
+	getLast4Digits,
 };
