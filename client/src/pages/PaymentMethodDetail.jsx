@@ -7,7 +7,7 @@ import { formatCardNumber, sanitizeCardNumber } from '../lib/utils';
 
 import '../styles/Form.css';
 
-import { getPaymentMethodTypes } from '../apis/paymentMethods';
+import { getPaymentMethodTypes, createPaymentMethod, updatePaymentMethod } from '../apis/paymentMethods';
 
 
 const PaymentMethodDetail = () => {
@@ -108,13 +108,31 @@ const PaymentMethodDetail = () => {
         return true;
     }
 
+    const handleSuccess = () => {
+        navigate('/payment-methods'); // Navigate to the payment methods page after successful operation
+    };
+
     const onSubmit = (data) => {
         const sanitizedData = {
             ...data,
             fullNumber: data.fullNumber.replace(/-/g, ''), // Remove dashes
         };
         console.log('Form submitted:', sanitizedData);
-        // Handle form submission logic here
+        if (paymentMethod._id) {
+            // Update existing payment method
+            updatePaymentMethod({ ...sanitizedData, _id: paymentMethod._id })
+                .then(handleSuccess)
+                .catch(error => {
+                    console.error('Error updating payment method:', error);
+                });
+        } else {
+            // Create new payment method
+            createPaymentMethod(sanitizedData)
+                .then(handleSuccess)
+                .catch(error => {
+                    console.error('Error creating payment method:', error);
+                });
+        }
     };
 
     const handleCancel = () => {

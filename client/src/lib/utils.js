@@ -52,6 +52,11 @@ const sanitizeCardNumber = (value) => {
 	return value.replace(/[^0-9]/g, "");
 };
 
+// get last 4 digits of card or bank number
+const getLast4Digits = (value) => {
+	return value.slice(-4);
+};
+
 export {
 	formatTime,
 	extractDate,
@@ -61,4 +66,5 @@ export {
 	groupPaymentMethodsByType,
 	formatCardNumber,
 	sanitizeCardNumber,
+	getLast4Digits,
 };
