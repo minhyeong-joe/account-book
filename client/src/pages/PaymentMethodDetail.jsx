@@ -7,22 +7,45 @@ import { formatCardNumber, sanitizeCardNumber } from '../lib/utils';
 
 import '../styles/Form.css';
 
-import { mockPaymentTypes } from '../lib/mockTransactions';
+import { getPaymentMethodTypes } from '../apis/paymentMethods';
 
 
 const PaymentMethodDetail = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { paymentMethod } = state || {};
-    const { register, handleSubmit, formState: { errors }, watch, setValue, getValues } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch, setValue, getValues, reset } = useForm({
         defaultValues: {
             name: paymentMethod?.name || '',
-            typeId: paymentMethod?.type?.id || '',
+            typeId: paymentMethod?.type?._id || '',
             fullNumber: paymentMethod?.fullNumber || ''
         }
     });
+    const [paymentTypes, setPaymentTypes] = useState([]);
 
-    const getPaymentTypeById = (id) => mockPaymentTypes.find(paymentType => paymentType.id === id);
+    useEffect(() => {
+        const fetchPaymentMethodTypes = async () => {
+            try {
+                const paymentMethodTypes = await getPaymentMethodTypes();
+                setPaymentTypes(paymentMethodTypes);
+            } catch (error) {
+                console.error('Error fetching payment method types:', error);
+            }
+        };
+        fetchPaymentMethodTypes();
+    }, []);
+
+    useEffect(() => {
+        if (paymentTypes.length > 0) {
+            reset({
+                name: paymentMethod?.name || '',
+                typeId: paymentMethod?.type?._id || '',
+                fullNumber: paymentMethod?.fullNumber || ''
+            });
+        }
+    }, [paymentMethod, paymentTypes, reset]);
+
+    const getPaymentTypeById = (id) => paymentTypes.find(paymentType => paymentType._id === id);
     const selectedTypeId = watch('typeId'); // Watch for changes in the dropdown
     const paymentMethodType = getPaymentTypeById(selectedTypeId);
 
@@ -121,8 +144,8 @@ const PaymentMethodDetail = () => {
                         className={errors.typeId ? 'error' : ''}
                     >
                         <option value="">Select Payment Method Type</option>
-                        {mockPaymentTypes.map(paymentType => (
-                            <option key={paymentType.id} value={paymentType.id}>
+                        {paymentTypes.map(paymentType => (
+                            <option key={paymentType._id} value={paymentType._id}>
                                 {paymentType.name}
                             </option>
                         ))}
