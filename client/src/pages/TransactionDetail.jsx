@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import { Card, TransactionTypeBtnGroup } from '../components';
-
-import { mockCategories, mockPaymentMethods } from '../lib/mockTransactions';
+import { getPaymentMethodName } from '../lib/utils';
+import { getPaymentMethods } from '../apis/paymentMethods';
+import { getCategories } from '../apis/category';
 
 import '../styles/Form.css';
 import '../styles/TransactionDetail.css';
@@ -19,9 +20,12 @@ const TransactionDetail = () => {
         return new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     }, []);
     const defaultDateTime = transaction?.datetime || localDateTime.toISOString().slice(0, 16);
-
+    
     const [transactionType, setTransactionType] = useState(transaction?.transactionType || 'income');
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const [paymentMethods, setPaymentMethods] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             dateTime: defaultDateTime,
             paymentMethod: transaction?.paymentMethod || '',
@@ -30,20 +34,51 @@ const TransactionDetail = () => {
             description: transaction?.description || '',
         },
     });
-    
-    // TODO: fetch payment methods and categories from API
-    const paymentMethods = mockPaymentMethods;
-    const categories = mockCategories.filter(category => category.type === transactionType);
+
+    // Fetch payment methods and categories on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [methods, allCats] = await Promise.all([
+                    getPaymentMethods(),
+                    getCategories()
+                ]);
+                setPaymentMethods(methods);
+                setAllCategories(allCats);
+                // Filter categories by transaction type
+                setCategories(allCats.filter(cat => cat.type === (transaction?.transactionType || 'income')));
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, [transaction?.transactionType]);
+
+    // filter categories based on transaction type
+    useEffect(() => {
+        setCategories(allCategories.filter(cat => cat.type === transactionType));
+    }, [transactionType, allCategories]);
+
+    useEffect(() => {
+        if (paymentMethods.length > 0 && categories.length > 0) {
+            reset({
+                dateTime: defaultDateTime,
+                paymentMethod: transaction?.paymentMethod || '',
+                category: transaction?.category || '',
+                amount: transaction?.amount || '',
+                description: transaction?.description || '',
+            });
+        }
+    }, [transaction, defaultDateTime, reset, paymentMethods, categories]);
 
     const onSubmit = (formData) => {
-        // Logic to save the transaction
         formData.transactionType = transactionType;
-        console.log("Form submitted with data:");
-        console.log(formData);
+        // TODO: Save transaction (add or update)
+        console.log('Form submitted with data:', formData);
     };
 
     const handleCancel = () => {
-        navigate(-1); // Navigate to the previous page
+        navigate(-1);
     };
 
     return (
@@ -52,7 +87,6 @@ const TransactionDetail = () => {
                 type={transactionType}
                 setType={setTransactionType}
             />
-
             <form className="form" onSubmit={handleSubmit(onSubmit)}>
                 <label>
                     Date and Time:
@@ -74,8 +108,8 @@ const TransactionDetail = () => {
                     >
                         <option value="">Select Payment Method</option>
                         {paymentMethods.map(method => (
-                            <option key={method.id} value={method.name}>
-                                {method.name}
+                            <option key={method._id} value={getPaymentMethodName(method)}>
+                                {getPaymentMethodName(method)}
                             </option>
                         ))}
                     </select>
@@ -91,7 +125,7 @@ const TransactionDetail = () => {
                     >
                         <option value="">Select Category</option>
                         {categories.map(category => (
-                            <option key={category.id} value={category.name}>
+                            <option key={category._id} value={category.name}>
                                 {category.name}
                             </option>
                         ))}
@@ -133,7 +167,6 @@ const TransactionDetail = () => {
                     <input className="cancel-btn" type="button" value="Cancel" onClick={handleCancel} />
                 </div>
             </form>
-
         </Card>
     );
 };

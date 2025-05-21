@@ -8,6 +8,7 @@ const EditableListItem = ({ item, onEdit, onDelete, isNew }) => {
     const [editMode, setEditMode] = useState(isNew);
     const [newName, setNewName] = useState(item.name);
 
+    
     const handleEdit = () => {
         setEditMode(true);
         setNewName(item.name); // Reset to original name when entering edit mode

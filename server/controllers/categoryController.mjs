@@ -2,7 +2,19 @@ import { Category } from "../utils/mongo/models.mjs";
 
 // GET /categories - List all categories
 const getCategories = async (req, res) => {
-	const categories = await Category.find().select("-__v");
+	const { type } = req.query;
+	let filter = {};
+	if (type) {
+		const VALID_TYPES = ["income", "expense"];
+		let typeLower = type.toLowerCase();
+		if (!VALID_TYPES.includes(typeLower)) {
+			return res
+				.status(400)
+				.json({ message: `Type must be one of ${VALID_TYPES.join(", ")}` });
+		}
+		filter = { type: typeLower };
+	}
+	const categories = await Category.find(filter).select("-__v");
 	res.status(200).json(categories);
 };
 
@@ -51,7 +63,7 @@ const deleteCategory = async (req, res) => {
 	if (!category) {
 		return res.status(404).json({ message: "Category not found" });
 	}
-	res.status(200).json({ message: "Category deleted successfully" });
+	res.status(204).send();
 };
 
 export { getCategories, createCategory, updateCategory, deleteCategory };
