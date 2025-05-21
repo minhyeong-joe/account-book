@@ -10,10 +10,12 @@ import '../styles/PaymentMethods.css';
 
 import { getPaymentMethods, deletePaymentMethod } from '../apis/paymentMethods';
 import { usePaymentMethodTypes } from '../contexts/PaymentMethodTypesContext';
+import { useFlash } from '../contexts/FlashContext';
 
 const PaymentMethods = () => {
     const [paymentMethods, setPaymentMethods] = useState({});
     const paymentTypes = usePaymentMethodTypes();
+    const { showFlash } = useFlash();
     
     useEffect(() => {
         const fetchPaymentMethods = async () => {
@@ -21,12 +23,12 @@ const PaymentMethods = () => {
                 const paymentMethods = await getPaymentMethods();
                 setPaymentMethods(groupPaymentMethodsByType(paymentMethods));
             } catch (error) {
-                console.error('Error fetching payment methods:', error);
+                showFlash(error.message || 'Error fetching payment methods', 'error');
             }
         };
 
         fetchPaymentMethods();
-    }, []);
+    }, [showFlash]);
 
     const handleDelete = async (method) => {
         try {
@@ -34,7 +36,7 @@ const PaymentMethods = () => {
             const updatedPaymentMethods = paymentMethods[method.type._id].filter(item => item._id !== method._id);
             setPaymentMethods(prevState => ({ ...prevState, [method.type._id]: updatedPaymentMethods }));
         } catch (error) {
-            console.error('Error deleting payment method:', error);
+            showFlash(error.message || 'Error deleting payment method', 'error');
         }
     }
 

@@ -4,7 +4,7 @@ import { Pencil, Trash2, Check, X } from 'lucide-react';
 
 import '../styles/EditableListItem.css';
 
-const EditableListItem = ({ item, onEdit, onDelete, isNew }) => {
+const EditableListItem = ({ item, onConfirm, onDelete, onCancel, isNew }) => {
     const [editMode, setEditMode] = useState(isNew);
     const [newName, setNewName] = useState(item.name);
 
@@ -19,14 +19,14 @@ const EditableListItem = ({ item, onEdit, onDelete, isNew }) => {
     };
 
     const handleConfirm = () => {
-        onEdit(newName);
+        onConfirm(newName);
         setEditMode(false);
     };
 
     const handleCancel = () => {
         setEditMode(false);
         if (isNew) {
-            onDelete(item); // Remove the item if it's new and edit is canceled
+            onCancel(item); // Remove the item if it's new and edit is canceled
         } else {
             setNewName(item.name); // Reset to original name when canceling
         }

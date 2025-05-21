@@ -16,21 +16,6 @@ const getCategories = async () => {
 	return await response.json();
 };
 
-const getCategoriesByType = async (type) => {
-	const response = await fetch(`${endpoint}/categories?type=${type}`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
-
-	if (!response.ok) {
-		throw new Error("Failed to fetch categories");
-	}
-
-	return await response.json();
-};
-
 const createCategory = async (category) => {
 	const response = await fetch(`${endpoint}/categories`, {
 		method: "POST",
@@ -81,10 +66,4 @@ const deleteCategory = async (categoryId) => {
 	}
 };
 
-export {
-	getCategories,
-	getCategoriesByType,
-	createCategory,
-	updateCategory,
-	deleteCategory,
-};
+export { getCategories, createCategory, updateCategory, deleteCategory };

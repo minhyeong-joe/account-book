@@ -9,6 +9,7 @@ import '../styles/Form.css';
 
 import { createPaymentMethod, updatePaymentMethod } from '../apis/paymentMethods';
 import { usePaymentMethodTypes } from '../contexts/PaymentMethodTypesContext';
+import { useFlash } from '../contexts/FlashContext';
 
 const getDefaultValues = (paymentMethod) => ({
     name: paymentMethod?.name || '',
@@ -21,6 +22,7 @@ const PaymentMethodDetail = () => {
     const navigate = useNavigate();
     const { paymentMethod } = state || {};
     const paymentTypes = usePaymentMethodTypes();
+    const { showFlash } = useFlash();
 
     // Memoize default values to avoid unnecessary resets
     const defaultValues = useMemo(() => getDefaultValues(paymentMethod), [paymentMethod]);
@@ -110,14 +112,14 @@ const PaymentMethodDetail = () => {
             updatePaymentMethod({ ...sanitizedData, _id: paymentMethod._id })
                 .then(handleSuccess)
                 .catch(error => {
-                    console.error('Error updating payment method:', error);
+                    showFlash(error.message || 'Error updating payment method', 'error');
                 });
         } else {
             // Create new payment method
             createPaymentMethod(sanitizedData)
                 .then(handleSuccess)
                 .catch(error => {
-                    console.error('Error creating payment method:', error);
+                    showFlash(error.message || 'Error creating payment method', 'error');
                 });
         }
     };

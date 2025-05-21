@@ -6,12 +6,15 @@ import { Card, EditableListItem, TransactionTypeBtnGroup } from '../components';
 import '../styles/Categories.css';
 
 import { getCategories, createCategory, updateCategory, deleteCategory } from '../apis/category';
+import { useFlash } from '../contexts/FlashContext';
 
 const Categories = () => {
     const [transactionType, setTransactionType] = useState('income'); // Default to 'income'
     const [allCategories, setAllCategories] = useState([]);
     const [categories, setCategories] = useState([]);
+    const { showFlash } = useFlash();
 
+    
     useEffect(() => {
         const fetchCategories = async () => {
             const categories = await getCategories();
@@ -39,22 +42,30 @@ const Categories = () => {
         setAllCategories([...allCategories, newCategory]);
     }
 
-    const handleEdit = async (category, newName, isNew=false) => {
-        
-        let newOrUpdatedCategory = null;
+    const handleConfirm = async (category, newName, isNew=false) => {
         try {
             if (isNew) {
-                newOrUpdatedCategory = await createCategory({ name: newName, type: transactionType });
+                const newCategory = await createCategory({ name: newName, type: category.type });
+                // remove temporary category from all categories
+                const updatedCategories = allCategories.filter(item => item._id !== category._id);
+                setAllCategories([...updatedCategories, newCategory]);
             } else {
-                newOrUpdatedCategory = await updateCategory(category._id, { name: newName });
+                const updatedCategory = await updateCategory(category._id, { name: newName });
+                const updatedCategories = allCategories.map(item => {
+                    if (item._id === category._id) {
+                        return updatedCategory;
+                    }
+                    return item;
+                });
+                setAllCategories(updatedCategories);
             }
-            const allCategoriesCopy = [...allCategories].filter(item => item._id !== category._id);
-            setAllCategories([...allCategoriesCopy, newOrUpdatedCategory]);
         } catch (error) {
-            console.error(error);
-            // remove the new category if creation fails
-            const allCategoriesCopy = [...allCategories].filter(item => item._id !== category._id);
-            setAllCategories(allCategoriesCopy);
+            showFlash(error.message || 'Failed to save category', 'error');
+            // remove temporary category if it was a new one
+            if (isNew) {
+                const updatedCategories = allCategories.filter(item => item._id !== category._id);
+                setAllCategories(updatedCategories);
+            }
         }
     }
 
@@ -65,8 +76,13 @@ const Categories = () => {
             const updatedCategories = allCategories.filter(item => item._id !== category._id);
             setAllCategories(updatedCategories);
         } catch (error) {
-            console.error(error);
+            showFlash(error.message || 'Failed to delete category', 'error');
         }
+    }
+
+    const handleCancel = (category) => {
+        const updatedCategories = allCategories.filter(item => item._id !== category._id);
+        setAllCategories(updatedCategories);
     }
 
     return (
@@ -86,8 +102,9 @@ const Categories = () => {
                     <EditableListItem
                         key={category._id}
                         item={category}
-                        onEdit={(newName) => handleEdit(category, newName, category.isNew)}
+                        onConfirm={(newName) => handleConfirm(category, newName, category.isNew)}
                         onDelete={() => handleDelete(category)}
+                        onCancel={() => handleCancel(category)}
                         isNew={category.isNew}
                     />
                 ))}
