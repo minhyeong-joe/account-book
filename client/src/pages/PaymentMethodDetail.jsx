@@ -1,56 +1,49 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 
 import Card from '../components/Card';
 import { formatCardNumber, sanitizeCardNumber } from '../lib/utils';
 
 import '../styles/Form.css';
 
-import { getPaymentMethodTypes, createPaymentMethod, updatePaymentMethod } from '../apis/paymentMethods';
+import { createPaymentMethod, updatePaymentMethod } from '../apis/paymentMethods';
+import { usePaymentMethodTypes } from '../contexts/PaymentMethodTypesContext';
 
+const getDefaultValues = (paymentMethod) => ({
+    name: paymentMethod?.name || '',
+    typeId: paymentMethod?.type?._id || '',
+    fullNumber: paymentMethod?.fullNumber || ''
+});
 
 const PaymentMethodDetail = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { paymentMethod } = state || {};
+    const paymentTypes = usePaymentMethodTypes();
+
+    // Memoize default values to avoid unnecessary resets
+    const defaultValues = useMemo(() => getDefaultValues(paymentMethod), [paymentMethod]);
+
     const { register, handleSubmit, formState: { errors }, watch, setValue, getValues, reset } = useForm({
-        defaultValues: {
-            name: paymentMethod?.name || '',
-            typeId: paymentMethod?.type?._id || '',
-            fullNumber: paymentMethod?.fullNumber || ''
-        }
+        defaultValues
     });
-    const [paymentTypes, setPaymentTypes] = useState([]);
 
-    useEffect(() => {
-        const fetchPaymentMethodTypes = async () => {
-            try {
-                const paymentMethodTypes = await getPaymentMethodTypes();
-                setPaymentTypes(paymentMethodTypes);
-            } catch (error) {
-                console.error('Error fetching payment method types:', error);
-            }
-        };
-        fetchPaymentMethodTypes();
-    }, []);
-
-    useEffect(() => {
-        if (paymentTypes.length > 0) {
-            reset({
-                name: paymentMethod?.name || '',
-                typeId: paymentMethod?.type?._id || '',
-                fullNumber: paymentMethod?.fullNumber || ''
-            });
-        }
-    }, [paymentMethod, paymentTypes, reset]);
-
+    // watch the typeId field to determine the payment method type (bank, card, cash)
+    const selectedTypeId = watch('typeId');
     const getPaymentTypeById = (id) => paymentTypes.find(paymentType => paymentType._id === id);
-    const selectedTypeId = watch('typeId'); // Watch for changes in the dropdown
     const paymentMethodType = getPaymentTypeById(selectedTypeId);
 
     const [label, setLabel] = useState('');
     const [showFullNumber, setShowFullNumber] = useState(true);
+
+    // Reset form when paymentTypes are loaded or paymentMethod changes
+    useEffect(() => {
+        if (paymentTypes.length > 0) {
+            reset(getDefaultValues(paymentMethod));
+        }
+    }, [paymentMethod, paymentTypes, reset]);
+
 
     const isPaymentTypeCard = useCallback(() => {
         return ['Credit Card', 'Debit Card'].includes(paymentMethodType?.name);
@@ -61,31 +54,26 @@ const PaymentMethodDetail = () => {
     }, [paymentMethodType]);
 
     useEffect(() => {
-		const currentValue = getValues("fullNumber");
+        const currentValue = getValues("fullNumber");
 
-		if (paymentMethodType?.name === "Cash") {
-			setLabel("");
-			setShowFullNumber(false);
-			setValue("fullNumber", "");
-		} else if (
-			isPaymentTypeCard()
-		) {
-			setLabel("Card Number");
-			setShowFullNumber(true);
-			if (currentValue && !currentValue.includes("-")) {
-				setValue("fullNumber", formatCardNumber(currentValue));
-			}
-		} else if (
-			isPaymentTypeBank()
-		) {
-			setLabel("Bank Number");
-			setShowFullNumber(true);
-			if (currentValue && currentValue.includes("-")) {
-				setValue("fullNumber", sanitizeCardNumber(currentValue));
-			}
-		}
-    }, [paymentMethodType, getValues, setValue, setLabel, setShowFullNumber, isPaymentTypeBank, isPaymentTypeCard]);
-
+        if (paymentMethodType?.name === "Cash") {
+            setLabel("");
+            setShowFullNumber(false);
+            setValue("fullNumber", "");
+        } else if (isPaymentTypeCard()) {
+            setLabel("Card Number");
+            setShowFullNumber(true);
+            if (currentValue && !currentValue.includes("-")) {
+                setValue("fullNumber", formatCardNumber(currentValue));
+            }
+        } else if (isPaymentTypeBank()) {
+            setLabel("Bank Number");
+            setShowFullNumber(true);
+            if (currentValue && currentValue.includes("-")) {
+                setValue("fullNumber", sanitizeCardNumber(currentValue));
+            }
+        }
+    }, [paymentMethodType, getValues, setValue, isPaymentTypeBank, isPaymentTypeCard]);
 
     const onFullNumberChange = e => {
         const newValue = e.target.value;
@@ -117,7 +105,6 @@ const PaymentMethodDetail = () => {
             ...data,
             fullNumber: data.fullNumber.replace(/-/g, ''), // Remove dashes
         };
-        console.log('Form submitted:', sanitizedData);
         if (paymentMethod._id) {
             // Update existing payment method
             updatePaymentMethod({ ...sanitizedData, _id: paymentMethod._id })
