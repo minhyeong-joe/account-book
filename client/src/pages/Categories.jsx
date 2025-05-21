@@ -5,58 +5,68 @@ import { Card, EditableListItem, TransactionTypeBtnGroup } from '../components';
 
 import '../styles/Categories.css';
 
-import { mockCategories } from '../lib/mockTransactions';
+import { getCategories, createCategory, updateCategory, deleteCategory } from '../apis/category';
 
 const Categories = () => {
     const [transactionType, setTransactionType] = useState('income'); // Default to 'income'
+    const [allCategories, setAllCategories] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    console.log(categories);
-    
-    
     useEffect(() => {
-        // Fetch categories based on the selected transaction type
-        // This is a placeholder for actual API call
-        const categories = mockCategories.filter(category => category.type === transactionType);
-        setCategories(categories);
-    }, [transactionType]);
+        const fetchCategories = async () => {
+            const categories = await getCategories();
+            setAllCategories(categories);
+        }
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        // Filter categories based on the selected transaction type
+        const filteredCategories = allCategories.filter(category => category.type === transactionType);
+        setCategories(filteredCategories);
+    }, [transactionType, allCategories]);
 
     const handleAddNew = () => {
-        // Determine the next available ID as a string
-        const nextId = (Math.max(...mockCategories.map(category => parseInt(category.id, 10)), 0) + 1).toString();
-
         // Create a new category with default values
         const newCategory = {
-            id: nextId,
+            _id: `temp-${Date.now()}`, // Temporary ID for new category
             name: '', // Empty name for user input
             type: transactionType, // Current transaction type
             isNew: true,
         };
 
         // Add the new category to the list
-        setCategories([...categories, newCategory]);
+        setAllCategories([...allCategories, newCategory]);
     }
 
-    const handleEdit = (category, newName) => {
-        // Update the category name
-        const updatedCategories = categories.map(item => {
-            if (item.id === category.id) {
-                if (item.isNew) {
-                    const { isNew: _, ...rest } = item;
-                    item = { ...rest };
-                }
-                return { ...item, name: newName };
+    const handleEdit = async (category, newName, isNew=false) => {
+        
+        let newOrUpdatedCategory = null;
+        try {
+            if (isNew) {
+                newOrUpdatedCategory = await createCategory({ name: newName, type: transactionType });
+            } else {
+                newOrUpdatedCategory = await updateCategory(category._id, { name: newName });
             }
-            return item;
-        });
-        setCategories(updatedCategories);
+            const allCategoriesCopy = [...allCategories].filter(item => item._id !== category._id);
+            setAllCategories([...allCategoriesCopy, newOrUpdatedCategory]);
+        } catch (error) {
+            console.error(error);
+            // remove the new category if creation fails
+            const allCategoriesCopy = [...allCategories].filter(item => item._id !== category._id);
+            setAllCategories(allCategoriesCopy);
+        }
     }
 
-    const handleDelete = (category) => {
+    const handleDelete = async (category) => {
         // Logic to delete a category
-        const updatedCategories = categories.filter(item => item.id !== category.id);
-        setCategories(updatedCategories);
-        console.log('Delete Category clicked!');
+        try {
+            await deleteCategory(category._id);
+            const updatedCategories = allCategories.filter(item => item._id !== category._id);
+            setAllCategories(updatedCategories);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
@@ -74,9 +84,9 @@ const Categories = () => {
             <ul>
                 {categories.map(category => (
                     <EditableListItem
-                        key={category.id}
+                        key={category._id}
                         item={category}
-                        onEdit={(newName) => handleEdit(category, newName)}
+                        onEdit={(newName) => handleEdit(category, newName, category.isNew)}
                         onDelete={() => handleDelete(category)}
                         isNew={category.isNew}
                     />

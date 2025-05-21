@@ -4,7 +4,7 @@ import { Plus, Trash2, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { Card } from '../components';
-import { groupPaymentMethodsByType, getLast4Digits } from '../lib/utils';
+import { groupPaymentMethodsByType, getPaymentMethodName } from '../lib/utils';
 
 import '../styles/PaymentMethods.css';
 
@@ -67,7 +67,7 @@ const PaymentMethods = () => {
                     <ul className="payment-methods-list">
                         {paymentMethods?.[type._id]?.map(method => (
                             <li key={method._id} className='list-item'>
-                                <span>{method.name}{method.fullNumber && ` ... ${getLast4Digits(method.fullNumber)}`}</span>
+                                <span>{getPaymentMethodName(method)}</span>
                                 <div className="edit-and-delete-group">
                                     <Link to={`/payment-method/${method._id}`} state={{ paymentMethod: method }} className="edit-link">
                                         <Pencil size={20} className="edit-icon" onClick={() => handleEdit(method)} />

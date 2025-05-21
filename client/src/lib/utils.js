@@ -57,6 +57,15 @@ const getLast4Digits = (value) => {
 	return value.slice(-4);
 };
 
+const getPaymentMethodName = (paymentMethod) => {
+	if (paymentMethod.fullNumber) {
+		return `${paymentMethod.name}...${getLast4Digits(
+			paymentMethod.fullNumber
+		)}`;
+	}
+	return paymentMethod.name;
+};
+
 export {
 	formatTime,
 	extractDate,
@@ -67,4 +76,5 @@ export {
 	formatCardNumber,
 	sanitizeCardNumber,
 	getLast4Digits,
+	getPaymentMethodName,
 };
