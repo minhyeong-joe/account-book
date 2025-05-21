@@ -1,0 +1,26 @@
+.flash-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 12px 24px;
+  border-radius: 6px;
+  background: #f44336;
+  color: #fff;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  animation: fadeInOut 4s forwards;
+}
+.flash-message.error {
+  background: #f44336;
+}
+.flash-message.success {
+  background: #4caf50;
+}
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}

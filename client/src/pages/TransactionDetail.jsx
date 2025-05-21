@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { get, useForm } from 'react-hook-form';
+import { useFlash } from '../contexts/FlashContext';
 
 import { Card, TransactionTypeBtnGroup } from '../components';
 import { getPaymentMethodName } from '../lib/utils';
@@ -14,6 +15,7 @@ const TransactionDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { transaction } = location.state || {};
+    const { showFlash } = useFlash();
     
     const localDateTime = useMemo(() => {
         const now = new Date();
@@ -25,14 +27,18 @@ const TransactionDetail = () => {
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
     const [categories, setCategories] = useState([]);
+    
+
+    const getFormDefaultValues = (transaction, defaultDateTime) => ({
+        dateTime: defaultDateTime,
+        paymentMethod: transaction?.paymentMethod || '',
+        category: transaction?.category || '',
+        amount: transaction?.amount || '',
+        description: transaction?.description || '',
+    });
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        defaultValues: {
-            dateTime: defaultDateTime,
-            paymentMethod: transaction?.paymentMethod || '',
-            category: transaction?.category || '',
-            amount: transaction?.amount || '',
-            description: transaction?.description || '',
-        },
+        defaultValues: getFormDefaultValues(transaction, defaultDateTime),
     });
 
     // Fetch payment methods and categories on mount
@@ -48,32 +54,56 @@ const TransactionDetail = () => {
                 // Filter categories by transaction type
                 setCategories(allCats.filter(cat => cat.type === (transaction?.transactionType || 'income')));
             } catch (error) {
-                console.error('Error fetching data:', error);
+                showFlash(error.message || 'Error fetching data', 'error');
             }
         };
         fetchData();
-    }, [transaction?.transactionType]);
+    }, [transaction?.transactionType, showFlash]);
 
-    // filter categories based on transaction type
+    // filter categories and ensure removed category is included for existing transaction
     useEffect(() => {
-        setCategories(allCategories.filter(cat => cat.type === transactionType));
-    }, [transactionType, allCategories]);
+        let filteredCategories = allCategories.filter(item => item.type === transactionType);
+        // If editing a transaction and its category is missing, add it
+        if (
+            transaction &&
+            transaction.category &&
+            !filteredCategories.some(cat => cat.name === transaction.category)
+        ) {
+            filteredCategories = [
+                { _id: 'removed', name: transaction.category, type: transactionType, removed: true },
+                ...filteredCategories
+            ];
+        }
+        setCategories(filteredCategories);
+    }, [transactionType, allCategories, transaction]);
+
+    // ensure removed payment method is included for existing transaction
+    useEffect(() => {
+        let methods = paymentMethods;
+        if (
+            transaction &&
+            transaction.paymentMethod &&
+            !paymentMethods.some(method => getPaymentMethodName(method) === transaction.paymentMethod)
+        ) {
+            methods = [
+                { _id: 'removed', name: transaction.paymentMethod, removed: true },
+                ...paymentMethods
+            ];
+        }
+        setPaymentMethods(methods);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [paymentMethods.length, transaction]);
 
     useEffect(() => {
         if (paymentMethods.length > 0 && categories.length > 0) {
-            reset({
-                dateTime: defaultDateTime,
-                paymentMethod: transaction?.paymentMethod || '',
-                category: transaction?.category || '',
-                amount: transaction?.amount || '',
-                description: transaction?.description || '',
-            });
+            reset(getFormDefaultValues(transaction, defaultDateTime));
         }
     }, [transaction, defaultDateTime, reset, paymentMethods, categories]);
 
     const onSubmit = (formData) => {
         formData.transactionType = transactionType;
         // TODO: Save transaction (add or update)
+        // If error occurs, showFlash('Error saving transaction', 'error');
         console.log('Form submitted with data:', formData);
     };
 
@@ -109,7 +139,7 @@ const TransactionDetail = () => {
                         <option value="">Select Payment Method</option>
                         {paymentMethods.map(method => (
                             <option key={method._id} value={getPaymentMethodName(method)}>
-                                {getPaymentMethodName(method)}
+                                {getPaymentMethodName(method)}{method.removed ? ' (removed)' : ''}
                             </option>
                         ))}
                     </select>
@@ -126,7 +156,7 @@ const TransactionDetail = () => {
                         <option value="">Select Category</option>
                         {categories.map(category => (
                             <option key={category._id} value={category.name}>
-                                {category.name}
+                                {category.name}{category.removed ? ' (removed)' : ''}
                             </option>
                         ))}
                     </select>
