@@ -1,48 +1,66 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { get, useForm } from 'react-hook-form';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useFlash } from '../contexts/FlashContext';
 
 import { Card, TransactionTypeBtnGroup } from '../components';
-import { getPaymentMethodName } from '../lib/utils';
+import { getPaymentMethodName, toDatetimeLocal } from '../lib/utils';
 import { getPaymentMethods } from '../apis/paymentMethods';
 import { getCategories } from '../apis/category';
+import { createTransaction, updateTransaction, getTransactionById } from '../apis/transaction';
 
 import '../styles/Form.css';
 import '../styles/TransactionDetail.css';
 
+
 const TransactionDetail = () => {
+    const { id:transactionId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const { transaction } = location.state || {};
+    const { transaction:stateTransaction } = location.state || {};
     const { showFlash } = useFlash();
+
+    const [transaction, setTransaction] = useState(stateTransaction);
     
     const localDateTime = useMemo(() => {
         const now = new Date();
         return new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     }, []);
-    const defaultDateTime = transaction?.datetime || localDateTime.toISOString().slice(0, 16);
+    const defaultDateTime = localDateTime.toISOString().slice(0, 16);
     
     const [transactionType, setTransactionType] = useState(transaction?.transactionType || 'income');
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
     const [categories, setCategories] = useState([]);
-    
 
-    const getFormDefaultValues = (transaction, defaultDateTime) => ({
-        dateTime: defaultDateTime,
+    const getFormDefaultValues = useCallback(() => ({
+        datetime: toDatetimeLocal(transaction?.datetime) || defaultDateTime,
         paymentMethod: transaction?.paymentMethod || '',
         category: transaction?.category || '',
         amount: transaction?.amount || '',
         description: transaction?.description || '',
-    });
+    }), [transaction, defaultDateTime]);
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        defaultValues: getFormDefaultValues(transaction, defaultDateTime),
+        defaultValues: getFormDefaultValues(),
     });
 
     // Fetch payment methods and categories on mount
     useEffect(() => {
+        // fetch transaction on edit if transaction is undefined (ie. through manual URL entry)
+        if (transactionId && !transaction) {
+            const fetchTransaction = async () => {
+                try {
+                    const transactionData = await getTransactionById(transactionId);
+                    setTransaction(transactionData);
+                    setTransactionType(transactionData.transactionType)
+                } catch (error) {
+                    showFlash(error.message || 'Error fetching transaction', 'error');
+                    return;
+                }
+            };
+            fetchTransaction();
+        }
         const fetchData = async () => {
             try {
                 const [methods, allCats] = await Promise.all([
@@ -58,15 +76,16 @@ const TransactionDetail = () => {
             }
         };
         fetchData();
-    }, [transaction?.transactionType, showFlash]);
+    }, [transaction?.transactionType, showFlash, transactionId, transaction]);
 
     // filter categories and ensure removed category is included for existing transaction
     useEffect(() => {
         let filteredCategories = allCategories.filter(item => item.type === transactionType);
-        // If editing a transaction and its category is missing, add it
+        // If editing a transaction and its category is missing, add it ONLY if transactionType matches
         if (
             transaction &&
             transaction.category &&
+            transaction.transactionType === transactionType &&
             !filteredCategories.some(cat => cat.name === transaction.category)
         ) {
             filteredCategories = [
@@ -76,7 +95,7 @@ const TransactionDetail = () => {
         }
         setCategories(filteredCategories);
     }, [transactionType, allCategories, transaction]);
-
+    
     // ensure removed payment method is included for existing transaction
     useEffect(() => {
         let methods = paymentMethods;
@@ -95,20 +114,33 @@ const TransactionDetail = () => {
     }, [paymentMethods.length, transaction]);
 
     useEffect(() => {
-        if (paymentMethods.length > 0 && categories.length > 0) {
-            reset(getFormDefaultValues(transaction, defaultDateTime));
+        if (transaction && paymentMethods.length > 0 && categories.length > 0) {
+            reset(getFormDefaultValues());
         }
-    }, [transaction, defaultDateTime, reset, paymentMethods, categories]);
+    }, [reset, paymentMethods, categories, getFormDefaultValues, transaction]);
 
-    const onSubmit = (formData) => {
+    const onSubmit = async (formData) => {
         formData.transactionType = transactionType;
-        // TODO: Save transaction (add or update)
-        // If error occurs, showFlash('Error saving transaction', 'error');
-        console.log('Form submitted with data:', formData);
+        formData.amount = Number(formData.amount);
+        try {
+            if (transaction) {
+                // update existing transaction
+                await updateTransaction(transaction._id, formData);
+            } else {
+                // create new transaction
+                await createTransaction(formData);
+            }
+        } catch (error) {
+            showFlash(error.message || 'Error saving transaction', 'error');
+            return;
+        }
+        
+        showFlash('Transaction saved successfully', 'success');
+        navigate('/transactions');
     };
 
     const handleCancel = () => {
-        navigate(-1);
+        navigate('/transactions');
     };
 
     return (
@@ -122,12 +154,12 @@ const TransactionDetail = () => {
                     Date and Time:
                     <input 
                         type="datetime-local" 
-                        {...register('dateTime', { required: true })}
-                        aria-invalid={errors.dateTime ? 'true' : 'false'}
-                        className={errors.dateTime ? 'error' : ''}
+                        {...register('datetime', { required: true })}
+                        aria-invalid={errors.datetime ? 'true' : 'false'}
+                        className={errors.datetime ? 'error' : ''}
                     />
                 </label>
-                {errors.dateTime && <p role='alert' className='field-error-message'>Date and Time are required</p>}
+                {errors.datetime && <p role='alert' className='field-error-message'>Date and Time are required</p>}
 
                 <label>
                     Payment Method:

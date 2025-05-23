@@ -50,7 +50,7 @@ const updatePaymentMethod = async (paymentMethod) => {
 	const response = await fetch(
 		`${endpoint}/payment-methods/${paymentMethod._id}`,
 		{
-			method: "PATCH",
+			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 			},

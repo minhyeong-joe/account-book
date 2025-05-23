@@ -51,8 +51,20 @@ const getTransactions = async (req, res) => {
 		query.description = { $regex: description, $options: "i" };
 	}
 
-	const transactions = await Transaction.find(query).select("-__v");
+	const transactions = await Transaction.find(query)
+		.select("-__v")
+		.sort({ datetime: -1 });
 	res.status(200).json(transactions);
+};
+
+// GET /transactions/:id - Get a transaction by ID
+const getTransactionById = async (req, res) => {
+	const transaction = await Transaction.findById(req.params.id).select("-__v");
+	if (!transaction) {
+		return res.status(404).json({ message: "Transaction not found" });
+	}
+
+	res.status(200).json(transaction);
 };
 
 // POST /transactions - Create a new transaction
@@ -150,6 +162,7 @@ const deleteBatchTransactions = async (req, res) => {
 
 export {
 	getTransactions,
+	getTransactionById,
 	createTransaction,
 	updateTransaction,
 	deleteTransaction,

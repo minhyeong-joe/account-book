@@ -12,7 +12,7 @@ import { requireBody, validateId, asyncHandler } from "../utils/validation.mjs";
 // Category routes under "/categories"
 router.get("/", asyncHandler(getCategories));
 router.post("/", requireBody("name", "type"), asyncHandler(createCategory));
-router.patch(
+router.put(
 	"/:id",
 	validateId("id"),
 	requireBody("name"),

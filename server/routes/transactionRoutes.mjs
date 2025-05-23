@@ -3,6 +3,7 @@ const router = express.Router();
 
 import {
 	getTransactions,
+	getTransactionById,
 	createTransaction,
 	updateTransaction,
 	deleteTransaction,
@@ -12,6 +13,7 @@ import { requireBody, validateId, asyncHandler } from "../utils/validation.mjs";
 
 // Category routes under "/categories"
 router.get("/", asyncHandler(getTransactions));
+router.get("/:id", validateId("id"), asyncHandler(getTransactionById));
 router.post(
 	"/",
 	requireBody(
@@ -24,7 +26,7 @@ router.post(
 	),
 	asyncHandler(createTransaction)
 );
-router.patch(
+router.put(
 	"/:id",
 	validateId("id"),
 	requireBody(
