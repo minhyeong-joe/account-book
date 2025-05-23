@@ -51,7 +51,9 @@ const getTransactions = async (req, res) => {
 		query.description = { $regex: description, $options: "i" };
 	}
 
-	const transactions = await Transaction.find(query).select("-__v");
+	const transactions = await Transaction.find(query)
+		.select("-__v")
+		.sort({ datetime: -1 });
 	res.status(200).json(transactions);
 };
 

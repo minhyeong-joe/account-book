@@ -17,10 +17,21 @@ const extractTime = (datetime) => {
 	return datetime.split("T")[1]; // Extract time part (HH:MM:SS)
 };
 
+// Utility to convert UTC or ISO string to yyyy-MM-ddThh:mm for datetime-local input
+function toDatetimeLocal(dt) {
+	if (!dt) {
+		return "";
+	}
+	const date = new Date(dt);
+	const offset = date.getTimezoneOffset();
+	const local = new Date(date.getTime() - offset * 60000);
+	return local.toISOString().slice(0, 16);
+}
+
 const groupTransactionsByDate = (transactions) =>
 	transactions.reduce((acc, transaction) => {
 		const { datetime, amount, transactionType } = transaction;
-		const date = extractDate(datetime);
+		const date = extractDate(toDatetimeLocal(datetime));
 		if (!acc[date]) {
 			acc[date] = { transactions: [], income: 0, expense: 0 };
 		}
@@ -71,6 +82,7 @@ export {
 	extractDate,
 	extractYearMonth,
 	extractTime,
+	toDatetimeLocal,
 	groupTransactionsByDate,
 	groupPaymentMethodsByType,
 	formatCardNumber,

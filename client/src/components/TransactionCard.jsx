@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import Card from '../components/Card';
-import { formatTime, extractTime } from '../lib/utils';
+import { formatTime, extractTime, toDatetimeLocal } from '../lib/utils';
 
 import '../styles/TransactionCard.css';
 
@@ -40,7 +40,7 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
             {transactions.map((transaction) => (
                 <Link
                     className={`transaction-item${deleteMode ? ' delete-mode' : ''}`}
-                    key={transaction.id}
+                    key={transaction._id}
                     to={deleteMode ? '#' : `/transaction/${transaction.id}`}
                     state={{ transaction: transaction}}
                     onClick={(e) => handleRowClick(e, transaction)}
@@ -49,7 +49,7 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
                     <span className="transaction-category">{transaction.category}</span>
                     <div className="desc-and-time">
                         <span className="transaction-description">{transaction.description}</span>
-                        <span className="transaction-time">{formatTime(extractTime(transaction.datetime))}</span>
+                        <span className="transaction-time">{formatTime(extractTime(toDatetimeLocal(transaction.datetime)))}</span>
                     </div>
                     <span
                         className={`transaction-amount ${
