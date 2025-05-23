@@ -94,7 +94,7 @@ const TransactionDetail = () => {
             ];
         }
         setCategories(filteredCategories);
-    }, [transactionType, allCategories, transaction, getFormDefaultValues]);
+    }, [transactionType, allCategories, transaction]);
     
     // ensure removed payment method is included for existing transaction
     useEffect(() => {
@@ -155,11 +155,11 @@ const TransactionDetail = () => {
                     <input 
                         type="datetime-local" 
                         {...register('datetime', { required: true })}
-                        aria-invalid={errors.dateTime ? 'true' : 'false'}
-                        className={errors.dateTime ? 'error' : ''}
+                        aria-invalid={errors.datetime ? 'true' : 'false'}
+                        className={errors.datetime ? 'error' : ''}
                     />
                 </label>
-                {errors.dateTime && <p role='alert' className='field-error-message'>Date and Time are required</p>}
+                {errors.datetime && <p role='alert' className='field-error-message'>Date and Time are required</p>}
 
                 <label>
                     Payment Method:
