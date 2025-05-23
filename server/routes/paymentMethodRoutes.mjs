@@ -16,7 +16,7 @@ router.post(
 	requireBody("name", "typeId"),
 	asyncHandler(createPaymentMethod)
 );
-router.patch(
+router.put(
 	"/:id",
 	validateId("id"),
 	requireBody("name", "typeId"),

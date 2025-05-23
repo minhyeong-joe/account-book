@@ -34,7 +34,7 @@ const createCategory = async (category) => {
 
 const updateCategory = async (categoryId, payload) => {
 	const response = await fetch(`${endpoint}/categories/${categoryId}`, {
-		method: "PATCH",
+		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",
 		},

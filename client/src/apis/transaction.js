@@ -52,6 +52,21 @@ const getTransactions = async (
 	return await response.json();
 };
 
+const getTransactionById = async (transactionId) => {
+	const response = await fetch(`${endpoint}/transactions/${transactionId}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	if (!response.ok) {
+		const errorData = await response.json().catch(() => ({}));
+		throw new Error(errorData.message || "Failed to fetch transaction");
+	}
+
+	return await response.json();
+};
+
 const createTransaction = async (transaction) => {
 	const response = await fetch(`${endpoint}/transactions`, {
 		method: "POST",
@@ -68,4 +83,46 @@ const createTransaction = async (transaction) => {
 	return await response.json();
 };
 
-export { getTransactions, createTransaction };
+const updateTransaction = async (transactionId, transaction) => {
+	const response = await fetch(`${endpoint}/transactions/${transactionId}`, {
+		method: "PUT",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(transaction),
+	});
+	if (!response.ok) {
+		const errorData = await response.json().catch(() => ({}));
+		throw new Error(errorData.message || "Failed to update transaction");
+	}
+
+	return await response.json();
+};
+
+const deleteBatchTransactions = async (transactionIds) => {
+	const response = await fetch(`${endpoint}/transactions`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			ids: transactionIds,
+		}),
+	});
+	if (!response.ok) {
+		const errorData = await response.json().catch(() => ({}));
+		throw new Error(errorData.message || "Failed to delete transaction");
+	}
+
+	if (response.status === 204) {
+		return true;
+	}
+};
+
+export {
+	getTransactions,
+	getTransactionById,
+	createTransaction,
+	updateTransaction,
+	deleteBatchTransactions,
+};

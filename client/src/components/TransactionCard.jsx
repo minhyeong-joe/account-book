@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import Card from '../components/Card';
@@ -12,9 +12,9 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
     const handleRowClick = (e, transaction) => {
         if (deleteMode) {
             e.preventDefault();
-            const currentChecked = checkboxRefs.current[transaction.id]?.checked;
-            checkboxRefs.current[transaction.id].checked = !currentChecked;
-            onCheckboxChange(transaction.id);
+            const currentChecked = checkboxRefs.current[transaction._id]?.checked;
+            checkboxRefs.current[transaction._id].checked = !currentChecked;
+            onCheckboxChange(transaction._id);
         }
     }
 
@@ -23,8 +23,8 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
             type="checkbox"
             className="delete-checkbox"
             onClick={(e) => e.stopPropagation()}
-            onChange={() => onCheckboxChange(transaction.id)}
-            ref={(el) => (checkboxRefs.current[transaction.id] = el)}
+            onChange={() => onCheckboxChange(transaction._id)}
+            ref={(el) => (checkboxRefs.current[transaction._id] = el)}
         />
     )
 
@@ -41,7 +41,7 @@ const TransactionCard = ({ date, income, expense, transactions, deleteMode, onCh
                 <Link
                     className={`transaction-item${deleteMode ? ' delete-mode' : ''}`}
                     key={transaction._id}
-                    to={deleteMode ? '#' : `/transaction/${transaction.id}`}
+                    to={deleteMode ? '#' : `/transaction/${transaction._id}`}
                     state={{ transaction: transaction}}
                     onClick={(e) => handleRowClick(e, transaction)}
                 >

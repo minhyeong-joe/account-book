@@ -1,23 +1,26 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { get, useForm } from 'react-hook-form';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useFlash } from '../contexts/FlashContext';
 
 import { Card, TransactionTypeBtnGroup } from '../components';
 import { getPaymentMethodName, toDatetimeLocal } from '../lib/utils';
 import { getPaymentMethods } from '../apis/paymentMethods';
 import { getCategories } from '../apis/category';
-import { createTransaction } from '../apis/transaction';
+import { createTransaction, updateTransaction, getTransactionById } from '../apis/transaction';
 
 import '../styles/Form.css';
 import '../styles/TransactionDetail.css';
 
 
 const TransactionDetail = () => {
+    const { id:transactionId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const { transaction } = location.state || {};
+    const { transaction:stateTransaction } = location.state || {};
     const { showFlash } = useFlash();
+
+    const [transaction, setTransaction] = useState(stateTransaction);
     
     const localDateTime = useMemo(() => {
         const now = new Date();
@@ -29,7 +32,6 @@ const TransactionDetail = () => {
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
     const [categories, setCategories] = useState([]);
-
 
     const getFormDefaultValues = useCallback(() => ({
         datetime: toDatetimeLocal(transaction?.datetime) || defaultDateTime,
@@ -45,6 +47,20 @@ const TransactionDetail = () => {
 
     // Fetch payment methods and categories on mount
     useEffect(() => {
+        // fetch transaction on edit if transaction is undefined (ie. through manual URL entry)
+        if (transactionId && !transaction) {
+            const fetchTransaction = async () => {
+                try {
+                    const transactionData = await getTransactionById(transactionId);
+                    setTransaction(transactionData);
+                    setTransactionType(transactionData.transactionType)
+                } catch (error) {
+                    showFlash(error.message || 'Error fetching transaction', 'error');
+                    return;
+                }
+            };
+            fetchTransaction();
+        }
         const fetchData = async () => {
             try {
                 const [methods, allCats] = await Promise.all([
@@ -60,7 +76,7 @@ const TransactionDetail = () => {
             }
         };
         fetchData();
-    }, [transaction?.transactionType, showFlash]);
+    }, [transaction?.transactionType, showFlash, transactionId, transaction]);
 
     // filter categories and ensure removed category is included for existing transaction
     useEffect(() => {
@@ -107,17 +123,24 @@ const TransactionDetail = () => {
         formData.transactionType = transactionType;
         formData.amount = Number(formData.amount);
         try {
-            await createTransaction(formData);
+            if (transaction) {
+                // update existing transaction
+                await updateTransaction(transaction._id, formData);
+            } else {
+                // create new transaction
+                await createTransaction(formData);
+            }
         } catch (error) {
             showFlash(error.message || 'Error saving transaction', 'error');
             return;
         }
+        
         showFlash('Transaction saved successfully', 'success');
-        navigate(-1);
+        navigate('/transactions');
     };
 
     const handleCancel = () => {
-        navigate(-1);
+        navigate('/transactions');
     };
 
     return (

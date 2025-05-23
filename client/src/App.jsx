@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { PaymentMethodTypesProvider } from './contexts/PaymentMethodTypesContext';
 import { FlashProvider } from './contexts/FlashContext';
 import Transactions from './pages/Transactions';
@@ -20,7 +20,8 @@ function App() {
           <Navbar />
           <FlashMessage />
           <Routes>
-            <Route path="/" element={<Transactions />} />
+            <Route path="/" element={<Navigate to="/transactions" replace />} />
+            <Route path="/transactions" element={<Transactions />} />
             <Route path="/new-transaction" element={<TransactionDetail />} />
             <Route path="/transaction/:id" element={<TransactionDetail />} />
             <Route path="/payment-methods" element={<PaymentMethods />} />
